@@ -34,14 +34,14 @@ public class HomePageSocialMediaIconsTests : BaseTest
         Logger.LogInformation("Starting TC001: Social media icons visibility test for browser: {Browser}", CurrentBrowser);
         
         Logger.LogDebug("Scrolling to Social Media Icons section");
-        _homePage.ScrollToSocialMediaIcons();
+        _homePage.SocialMedia.ScrollToSocialMediaIcons();
         
         Logger.LogDebug("Checking Social Media Icons container visibility");
-        Assert.That(_homePage.IsSocialMediaIconsContainerVisible(TimeSpan.FromSeconds(5)), Is.True, 
+        Assert.That(_homePage.SocialMedia.IsSocialMediaIconsContainerVisible(TimeSpan.FromSeconds(5)), Is.True, 
             "Social Media Icons container should be visible");
         
         Logger.LogDebug("Checking all 3 Social Media Icons visibility");
-        Assert.That(_homePage.AreAllSocialMediaIconsVisible(TimeSpan.FromSeconds(5)), Is.True, 
+        Assert.That(_homePage.SocialMedia.AreAllSocialMediaIconsVisible(TimeSpan.FromSeconds(5)), Is.True, 
             "All 3 Social Media Icons should be visible");
         
         Logger.LogInformation("TC001: Social Media Icons section visibility test passed successfully for browser: {Browser}", CurrentBrowser);
@@ -54,10 +54,10 @@ public class HomePageSocialMediaIconsTests : BaseTest
         Logger.LogInformation("Starting TC002: Facebook icon URL test for browser: {Browser}", CurrentBrowser);
         
         Logger.LogDebug("Scrolling to Social Media Icons section for Facebook link test");
-        _homePage.ScrollToSocialMediaIcons();
+        _homePage.SocialMedia.ScrollToSocialMediaIcons();
         
         Logger.LogDebug("Getting Facebook icon href attribute");
-        var facebookElement = _homePage.GetFacebookIconElement();
+        var facebookElement = _homePage.SocialMedia.GetFacebookIconElement();
         var facebookHref = facebookElement.GetAttribute("href");
         Logger.LogDebug("Facebook icon href: {Href}", facebookHref);
         
@@ -75,10 +75,10 @@ public class HomePageSocialMediaIconsTests : BaseTest
         Logger.LogInformation("Starting TC003: Twitter icon URL test for browser: {Browser}", CurrentBrowser);
         
         Logger.LogDebug("Scrolling to Social Media Icons section for Twitter link test");
-        _homePage.ScrollToSocialMediaIcons();
+        _homePage.SocialMedia.ScrollToSocialMediaIcons();
         
         Logger.LogDebug("Getting Twitter icon href attribute");
-        var twitterElement = _homePage.GetTwitterIconElement();
+        var twitterElement = _homePage.SocialMedia.GetTwitterIconElement();
         var twitterHref = twitterElement.GetAttribute("href");
         Logger.LogDebug("Twitter icon href: {Href}", twitterHref);
         
@@ -96,10 +96,10 @@ public class HomePageSocialMediaIconsTests : BaseTest
         Logger.LogInformation("Starting TC004: Instagram icon URL test for browser: {Browser}", CurrentBrowser);
         
         Logger.LogDebug("Scrolling to Social Media Icons section for Instagram link test");
-        _homePage.ScrollToSocialMediaIcons();
+        _homePage.SocialMedia.ScrollToSocialMediaIcons();
         
         Logger.LogDebug("Getting Instagram icon href attribute");
-        var instagramElement = _homePage.GetInstagramIconElement();
+        var instagramElement = _homePage.SocialMedia.GetInstagramIconElement();
         var instagramHref = instagramElement.GetAttribute("href");
         Logger.LogDebug("Instagram icon href: {Href}", instagramHref);
         
@@ -116,11 +116,11 @@ public class HomePageSocialMediaIconsTests : BaseTest
     {
         Logger.LogInformation("Starting TC005: Social media new tab test for browser: {Browser}", CurrentBrowser);
 
-        _homePage.ScrollToSocialMediaIcons();
+        _homePage.SocialMedia.ScrollToSocialMediaIcons();
         
         var initialWindowCount = BrowserHelper.GetWindowCount(Driver);
         
-        _homePage.ClickFacebookIcon();
+        _homePage.SocialMedia.ClickFacebookIcon();
         
         WaitHelper.WaitForCondition(Driver, d => BrowserHelper.GetWindowCount(d) > initialWindowCount, TimeSpan.FromSeconds(5));
 
