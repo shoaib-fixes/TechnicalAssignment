@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+
+  <NUnit>
+    <NumberOfTestWorkers>8</NumberOfTestWorkers>
+    <Parallel>True</Parallel>
+  </NUnit>
+
+  <TestRunParameters>
+    <!-- Set Browser to Chrome, Firefox, or Edge -->
+    <Parameter name="Browser" value="Chrome" />
+  </TestRunParameters>
+
+</RunSettings> 
