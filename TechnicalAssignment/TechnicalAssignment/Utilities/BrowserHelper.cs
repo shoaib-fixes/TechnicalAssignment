@@ -46,6 +46,29 @@ public static class BrowserHelper
         Logger.LogDebug("Closed current window and switched to main window");
     }
 
+    public static int GetWindowCount(IWebDriver driver)
+    {
+        Logger.LogDebug("Getting window count");
+        var count = driver.WindowHandles.Count;
+        Logger.LogDebug("Current window count: {Count}", count);
+        return count;
+    }
+
+    public static void SwitchToLastWindow(IWebDriver driver)
+    {
+        Logger.LogDebug("Attempting to switch to the last window.");
+        var windowCount = driver.WindowHandles.Count;
+        if (windowCount > 0)
+        {
+            SwitchToWindow(driver, windowCount - 1);
+        }
+        else
+        {
+            Logger.LogError("Cannot switch to last window as no windows are open.");
+            throw new NoSuchWindowException("No windows available to switch to.");
+        }
+    }
+
     public static object? ExecuteJavaScript(IWebDriver driver, string script, params object[] args)
     {
         Logger.LogDebug("Executing JavaScript: {Script}", script);
