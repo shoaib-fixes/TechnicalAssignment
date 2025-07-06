@@ -13,12 +13,14 @@ public class HomePage : BasePage
     public HomePageMainNavigationComponent Navigation { get; }
     public HomePageNavigationComponent SocialMedia { get; }
     public HomePageQuickLinksComponent QuickLinks { get; }
+    public HomePageContactComponent Contact { get; }
 
     public HomePage(IWebDriver driver) : base(driver)
     {
         Navigation = new HomePageMainNavigationComponent(driver, Logger);
         SocialMedia = new HomePageNavigationComponent(driver, Logger);
         QuickLinks = new HomePageQuickLinksComponent(driver, Logger);
+        Contact = new HomePageContactComponent(driver, Logger);
     }
 
     public override bool IsPageLoaded(TimeSpan? timeout = null)
