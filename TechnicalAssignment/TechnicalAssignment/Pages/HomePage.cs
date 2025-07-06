@@ -10,11 +10,13 @@ public class HomePage : BasePage
     private static readonly By PageLoadIndicator = By.CssSelector("body");
     private static readonly By PageTitle = By.TagName("title");
     
+    public HomePageMainNavigationComponent Navigation { get; }
     public HomePageNavigationComponent SocialMedia { get; }
     public HomePageQuickLinksComponent QuickLinks { get; }
 
     public HomePage(IWebDriver driver) : base(driver)
     {
+        Navigation = new HomePageMainNavigationComponent(driver, Logger);
         SocialMedia = new HomePageNavigationComponent(driver, Logger);
         QuickLinks = new HomePageQuickLinksComponent(driver, Logger);
     }

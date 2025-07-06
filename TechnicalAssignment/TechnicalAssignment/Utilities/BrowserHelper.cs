@@ -149,6 +149,16 @@ public static class BrowserHelper
     }
 
     /// <summary>
+    /// Sets the browser viewport size to specific dimensions
+    /// </summary>
+    public static void SetViewportSize(IWebDriver driver, int width, int height)
+    {
+        Logger.LogDebug("Setting viewport size to: {Width}x{Height}", width, height);
+        driver.Manage().Window.Size = new System.Drawing.Size(width, height);
+        Logger.LogDebug("Viewport size set to: {Width}x{Height}", width, height);
+    }
+
+    /// <summary>
     /// Maximizes the browser window
     /// </summary>
     public static void MaximizeWindow(IWebDriver driver)

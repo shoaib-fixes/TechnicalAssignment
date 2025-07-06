@@ -21,15 +21,6 @@ public abstract class BaseTest
     protected ILogger Logger { get; private set; } = null!;
 
     public static BrowserType[] BrowserTypeTestCases => new[] { BrowserType.Chrome, BrowserType.Firefox, BrowserType.Edge };
-    
-    public static object[] MobileViewports => ViewportTestData.GetMobileViewportTestCases();
-    public static object[] TabletViewports => ViewportTestData.GetTabletViewportTestCases();
-    public static object[] DesktopViewports => ViewportTestData.GetDesktopViewportTestCases();
-
-    protected static ViewportSize[] GetAllViewportSizes() => ViewportTestData.GetAllViewportSizes();
-    protected static ViewportSize[] GetMobileViewportSizes() => ViewportTestData.GetMobileViewportSizes();
-    protected static ViewportSize[] GetTabletViewportSizes() => ViewportTestData.GetTabletViewportSizes();
-    protected static ViewportSize[] GetDesktopViewportSizes() => ViewportTestData.GetDesktopViewportSizes();
 
     [OneTimeSetUp]
     public void OneTimeSetUp()
@@ -98,7 +89,6 @@ public abstract class BaseTest
         finally
         {
             Driver?.Quit();
-            Driver?.Dispose();
             Logger.LogInformation("Driver quit and disposed.");
         }
     }

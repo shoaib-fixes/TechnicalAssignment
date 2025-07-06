@@ -6,6 +6,7 @@ using NUnit.Framework;
 using OpenQA.Selenium;
 using TechnicalAssignment.Pages;
 using TechnicalAssignment.Utilities;
+using TechnicalAssignment.Models;
 
 namespace TechnicalAssignment.Tests;
 
@@ -201,7 +202,7 @@ public class HomePageQuickLinksTests : BaseTest
         Logger.LogInformation("TC006: Quick Links text content validation test passed successfully");
     }
 
-    [TestCaseSource(nameof(MobileViewports))]
+    [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetMobileViewportTestCases))]
     [Description("TC008: Verify Quick Links section displays correctly on mobile viewports")]
     public void QuickLinks_OnMobileViewport_ShouldDisplayCorrectly(int width, int height, string deviceName)
     {
@@ -245,7 +246,7 @@ public class HomePageQuickLinksTests : BaseTest
         }
     }
 
-    [TestCaseSource(nameof(TabletViewports))]
+    [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetTabletViewportTestCases))]
     [Description("TC009: Verify Quick Links section displays correctly on tablet viewports")]
     public void QuickLinks_OnTabletViewport_ShouldDisplayCorrectly(int width, int height, string deviceName)
     {
@@ -281,7 +282,7 @@ public class HomePageQuickLinksTests : BaseTest
         }
     }
 
-    [TestCaseSource(nameof(DesktopViewports))]
+    [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetDesktopViewportTestCases))]
     [Description("TC010: Verify Quick Links section displays correctly on desktop viewports")]
     public void QuickLinks_OnDesktopViewport_ShouldDisplayCorrectly(int width, int height, string deviceName)
     {
