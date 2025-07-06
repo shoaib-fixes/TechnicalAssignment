@@ -8,32 +8,23 @@ using NUnit.Framework;
 using TechnicalAssignment.Configuration;
 using TechnicalAssignment.Models;
 using Microsoft.Extensions.Logging;
-using TechnicalAssignment.Utilities;
 
 namespace TechnicalAssignment.Drivers;
 
-public static class WebDriverFactory
+public class WebDriverFactory
 {
-    private static readonly ILogger Logger = LoggingHelper.CreateLogger("WebDriverFactory");
+    private readonly TestConfiguration _config;
+    private readonly ILogger<WebDriverFactory> _logger;
 
-    public static IWebDriver CreateDriver()
+    public WebDriverFactory(TestConfiguration config, ILogger<WebDriverFactory> logger)
     {
-        var browserString = TestContext.Parameters.Get("Browser", "Chrome");
-        var browserType = BrowserTypeExtensions.ToBrowserType(browserString);
-        return CreateDriver(browserType);
+        _config = config;
+        _logger = logger;
     }
 
-    public static IWebDriver CreateDriver(string browserName)
+    public IWebDriver CreateDriver(BrowserType browserType)
     {
-        var browserType = BrowserTypeExtensions.ToBrowserType(browserName);
-        return CreateDriver(browserType);
-    }
-
-    public static IWebDriver CreateDriver(BrowserType browserType)
-    {
-        var config = ConfigurationManager.Instance;
-        
-        Logger.LogInformation("Creating {Browser} driver with configuration settings", browserType.ToStringValue());
+        _logger.LogInformation("Creating {Browser} driver with configuration settings", browserType.ToStringValue());
         
         IWebDriver driver;
 
@@ -41,36 +32,36 @@ public static class WebDriverFactory
         {
             case BrowserType.Chrome:
                 new DriverManager().SetUpDriver(new ChromeConfig());
-                var chromeOptions = CreateChromeOptions(config);
+                var chromeOptions = CreateChromeOptions();
                 driver = new ChromeDriver(chromeOptions);
                 break;
             case BrowserType.Firefox:
                 new DriverManager().SetUpDriver(new FirefoxConfig());
-                var firefoxOptions = CreateFirefoxOptions(config);
+                var firefoxOptions = CreateFirefoxOptions();
                 driver = new FirefoxDriver(firefoxOptions);
                 break;
             case BrowserType.Edge:
                 new DriverManager().SetUpDriver(new EdgeConfig());
-                var edgeOptions = CreateEdgeOptions(config);
+                var edgeOptions = CreateEdgeOptions();
                 driver = new EdgeDriver(edgeOptions);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(browserType), browserType, "Unsupported browser type");
         }
 
-        ApplyDriverConfiguration(driver, config);
+        ApplyDriverConfiguration(driver);
         
-        Logger.LogInformation("{Browser} driver created successfully", browserType.ToStringValue());
+        _logger.LogInformation("{Browser} driver created successfully", browserType.ToStringValue());
         return driver;
     }
 
-    private static ChromeOptions CreateChromeOptions(ConfigurationManager config)
+    private ChromeOptions CreateChromeOptions()
     {
         var options = new ChromeOptions();
         
-        if (config.Browser.Headless)
+        if (_config.Browser.Headless)
         {
-            Logger.LogDebug("Enabling headless mode for Chrome");
+            _logger.LogDebug("Enabling headless mode for Chrome");
             options.AddArgument("--headless");
         }
         
@@ -83,31 +74,31 @@ public static class WebDriverFactory
             "--disable-notifications"
         );
         
-        Logger.LogDebug("Chrome options configured: Headless={Headless}", config.Browser.Headless);
+        _logger.LogDebug("Chrome options configured: Headless={Headless}", _config.Browser.Headless);
         return options;
     }
 
-    private static FirefoxOptions CreateFirefoxOptions(ConfigurationManager config)
+    private FirefoxOptions CreateFirefoxOptions()
     {
         var options = new FirefoxOptions();
         
-        if (config.Browser.Headless)
+        if (_config.Browser.Headless)
         {
-            Logger.LogDebug("Enabling headless mode for Firefox");
+            _logger.LogDebug("Enabling headless mode for Firefox");
             options.AddArgument("--headless");
         }
         
-        Logger.LogDebug("Firefox options configured: Headless={Headless}", config.Browser.Headless);
+        _logger.LogDebug("Firefox options configured: Headless={Headless}", _config.Browser.Headless);
         return options;
     }
 
-    private static EdgeOptions CreateEdgeOptions(ConfigurationManager config)
+    private EdgeOptions CreateEdgeOptions()
     {
         var options = new EdgeOptions();
         
-        if (config.Browser.Headless)
+        if (_config.Browser.Headless)
         {
-            Logger.LogDebug("Enabling headless mode for Edge");
+            _logger.LogDebug("Enabling headless mode for Edge");
             options.AddArgument("--headless");
         }
         
@@ -118,22 +109,22 @@ public static class WebDriverFactory
             "--disable-extensions"
         );
         
-        Logger.LogDebug("Edge options configured: Headless={Headless}", config.Browser.Headless);
+        _logger.LogDebug("Edge options configured: Headless={Headless}", _config.Browser.Headless);
         return options;
     }
 
-    private static void ApplyDriverConfiguration(IWebDriver driver, ConfigurationManager config)
+    private void ApplyDriverConfiguration(IWebDriver driver)
     {
-        Logger.LogDebug("Applying driver configuration: WindowSize={Width}x{Height}, Headless={Headless}", 
-            config.Browser.WindowSize.Width, config.Browser.WindowSize.Height, config.Browser.Headless);
+        _logger.LogDebug("Applying driver configuration: WindowSize={Width}x{Height}, Headless={Headless}", 
+            _config.Browser.WindowSize.Width, _config.Browser.WindowSize.Height, _config.Browser.Headless);
         
-        driver.Manage().Timeouts().PageLoad = config.Timeouts.DefaultTimeout;
+        driver.Manage().Timeouts().PageLoad = _config.Timeouts.DefaultTimeout;
         
         driver.Manage().Window.Size = new System.Drawing.Size(
-            config.Browser.WindowSize.Width, 
-            config.Browser.WindowSize.Height
+            _config.Browser.WindowSize.Width, 
+            _config.Browser.WindowSize.Height
         );
-        Logger.LogDebug("Window size set to {Width}x{Height} (Headless: {Headless})", 
-            config.Browser.WindowSize.Width, config.Browser.WindowSize.Height, config.Browser.Headless);
+        _logger.LogDebug("Window size set to {Width}x{Height} (Headless: {Headless})", 
+            _config.Browser.WindowSize.Width, _config.Browser.WindowSize.Height, _config.Browser.Headless);
     }
 } 

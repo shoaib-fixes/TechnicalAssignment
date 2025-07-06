@@ -30,6 +30,12 @@ public static class ElementHelper
                     element.Click();
                     return true;
                 }
+                catch (ElementClickInterceptedException ex)
+                {
+                    Logger.LogWarning(ex, "Default click was intercepted for {Locator}. Falling back to JavaScript click.", locator);
+                    JavaScriptClick(d, locator);
+                    return true;
+                }
                 catch (StaleElementReferenceException ex)
                 {
                     Logger.LogWarning(ex, "Stale element reference when clicking {Locator}, retrying", locator);

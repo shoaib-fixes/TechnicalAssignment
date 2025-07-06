@@ -1,5 +1,9 @@
 using NUnit.Framework;
 using Microsoft.Extensions.Logging;
+using OpenQA.Selenium;
+using System;
+using TechnicalAssignment.Pages;
+using TechnicalAssignment.Utilities;
 
 namespace TechnicalAssignment.Tests;
 
@@ -8,100 +12,66 @@ namespace TechnicalAssignment.Tests;
 [Parallelizable(ParallelScope.Fixtures)]
 public class SmokeTests : BaseTest
 {
+    private HomePage _homePage = null!;
 
-    [Test]
-    [Order(1)]
-    [Retry(3)]
-    public void Framework_WithBasicAssertion_ShouldPass()
+    [SetUp]
+    public void PageSetup()
     {
-        Logger.LogInformation("Starting basic framework validation test for browser: {Browser}", CurrentBrowser);
-        
-        var expected = "Smoke Test";
-        var actual = "Smoke Test";
-
-        Logger.LogDebug("Comparing expected: '{Expected}' with actual: '{Actual}'", expected, actual);
-        
-        Assert.That(actual, Is.EqualTo(expected), "Basic string comparison should pass to validate test framework.");
-        
-        Logger.LogInformation("Basic framework validation test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Navigating to base URL for smoke test.");
+        Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
+        _homePage = new HomePage(Driver);
+        _homePage.WaitForPageToLoad();
     }
 
-    [Test]
-    [Order(2)]
-    [Retry(2)]
-    public void RetryMechanism_WithIntentionalFailure_ShouldPassOnSecondAttempt()
+    [Test(Description = "Verify that the home page loads without errors")]
+    public void HomePage_ShouldLoadSuccessfully()
     {
-        var currentAttempt = TestContext.CurrentContext.CurrentRepeatCount + 1;
-        Logger.LogInformation("Retry mechanism test attempt {AttemptCount} for browser: {Browser}", currentAttempt, CurrentBrowser);
+        Logger.LogInformation("Verifying home page title.");
+        Assert.That(Driver.Title, Does.Contain("Restful-booker-platform demo"), "Page title should be correct.");
         
-        if (currentAttempt < 2)
-        {
-            Logger.LogInformation("Failing test intentionally on attempt {AttemptCount}", currentAttempt);
-            Assert.Fail($"Intentionally failing on attempt {currentAttempt} to test retry mechanism");
-        }
-        
-        Logger.LogInformation("Retry mechanism test passed successfully on attempt {AttemptCount} for browser: {Browser}", currentAttempt, CurrentBrowser);
+        Logger.LogInformation("Verifying home page main content is visible.");
+        Assert.That(_homePage.IsPageLoaded(TimeSpan.FromSeconds(10)), Is.True, "Home page content should be loaded and visible.");
+    }
+    
+    [Test(Description = "Verify that a core UI component, Quick Links, is visible")]
+    public void QuickLinks_ShouldBeVisibleOnHomePage()
+    {
+        Logger.LogInformation("Verifying Quick Links component visibility.");
+        Assert.That(_homePage.QuickLinks.IsQuickLinksSectionVisible(TimeSpan.FromSeconds(5)), Is.True, "Quick Links section should be visible.");
+    }
+    
+    [Test(Description = "Verify that a core UI component, Social Media, is visible")]
+    public void SocialMedia_ShouldBeVisibleOnHomePage()
+    {
+        Logger.LogInformation("Verifying Social Media component visibility.");
+        Assert.That(_homePage.SocialMedia.IsSocialMediaIconsContainerVisible(TimeSpan.FromSeconds(5)), Is.True, "Social Media section should be visible.");
     }
 
-    [Test]
-    [Order(3)]
-    [Retry(3)]
-    public void Website_WithValidUrl_ShouldBeReachable()
+    [Test(Description = "Verify basic navigation to a different section of the page works")]
+    public void Navigation_ClickingRoomsLink_ShouldNavigateToRoomsSection()
     {
-        Logger.LogInformation("Starting website connectivity test for browser: {Browser}", CurrentBrowser);
-        
-        var url = Config.BaseUrl;
-        Logger.LogInformation("Navigating to URL: {Url}", url);
-        
-        Driver.Navigate().GoToUrl(url);
-        
-        var title = Driver.Title;
-        Logger.LogInformation("Page title retrieved: '{Title}' for browser: {Browser}", title, CurrentBrowser);
-        
-        Assert.That(title, Is.Not.Null.Or.Empty, $"Page title should not be empty when website is reachable in {CurrentBrowser}.");
-        
-        Logger.LogInformation("Website connectivity test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Verifying navigation to Rooms section.");
+        _homePage.QuickLinks.ScrollToQuickLinks();
+        _homePage.QuickLinks.ClickLink("Rooms");
+        WaitHelper.WaitForCondition(Driver, d => d.Url.Contains("#rooms"), TimeSpan.FromSeconds(5));
+        Assert.That(Driver.Url, Does.Contain("#rooms"), "Clicking 'Rooms' link should navigate to the rooms section.");
+    }
+    
+    [Test(Description = "Verify the site is responsive on a mobile viewport")]
+    [TestCase(375, 667, "iPhone 8")]
+    public void HomePage_ShouldBeResponsiveOnMobile(int width, int height, string deviceName)
+    {
+        Logger.LogInformation("Verifying responsiveness on mobile device: {DeviceName}", deviceName);
+        BrowserHelper.SetViewportSize(Driver, TestConfig, width, height);
+        Assert.That(_homePage.IsPageLoaded(), Is.True, $"Page should remain loaded on {deviceName}.");
     }
 
-    [Test]
-    [Order(4)]
-    [Retry(1)]
-    public void ScreenshotHelper_WithManualCapture_ShouldSaveFile()
+    [Test(Description = "Verify the site is responsive on a tablet viewport")]
+    [TestCase(768, 1024, "iPad")]
+    public void HomePage_ShouldBeResponsiveOnTablet(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting manual screenshot capture test for browser: {Browser}", CurrentBrowser);
-        
-        var url = Config.BaseUrl;
-        Logger.LogInformation("Navigating to URL: {Url}", url);
-        
-        Driver.Navigate().GoToUrl(url);
-        
-        Logger.LogInformation("Manually capturing screenshot to validate helper functionality");
-        Utilities.ScreenshotHelper.CaptureScreenshot(Driver, "Manual_Screenshot_Test");
-        
-        var testResultsDir = Utilities.TestResultsHelper.GetTestResultsDirectory();
-        var expectedLogFile = Utilities.TestResultsHelper.GetLogFilePath();
-        
-        Logger.LogInformation("Test results directory: {Directory}", testResultsDir);
-        Logger.LogInformation("Expected log file: {LogFile}", expectedLogFile);
-        
-        Logger.LogInformation("Manual screenshot capture test completed successfully for browser: {Browser}", CurrentBrowser);
-        Assert.Pass("Screenshot helper validation completed successfully");
-    }
-
-    [Test]
-    [Order(5)]
-    [Retry(1)]
-    [Explicit("This test intentionally fails to verify screenshot capture - run explicitly when needed")]
-    public void ScreenshotHelper_WithTestFailure_ShouldCaptureAutomatically()
-    {
-        Logger.LogInformation("Starting automatic screenshot capture test for browser: {Browser}", CurrentBrowser);
-        
-        var url = Config.BaseUrl;
-        Logger.LogInformation("Navigating to URL: {Url}", url);
-        
-        Driver.Navigate().GoToUrl(url);
-        
-        Logger.LogInformation("Intentionally failing test to verify automatic screenshot capture");
-        Assert.Fail("Intentionally failing test to verify automatic screenshot capture functionality");
+        Logger.LogInformation("Verifying responsiveness on tablet device: {DeviceName}", deviceName);
+        BrowserHelper.SetViewportSize(Driver, TestConfig, width, height);
+        Assert.That(_homePage.IsPageLoaded(), Is.True, $"Page should remain loaded on {deviceName}.");
     }
 } 

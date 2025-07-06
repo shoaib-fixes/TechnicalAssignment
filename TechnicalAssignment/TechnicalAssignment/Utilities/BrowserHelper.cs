@@ -8,7 +8,6 @@ namespace TechnicalAssignment.Utilities;
 public static class BrowserHelper
 {
     private static readonly ILogger Logger = LoggingHelper.CreateLogger("BrowserHelper");
-    private static ConfigurationManager Config => ConfigurationManager.Instance;
 
     public static void SwitchToWindow(IWebDriver driver, int windowIndex)
     {
@@ -78,14 +77,14 @@ public static class BrowserHelper
         return result;
     }
 
-    public static void WaitForJavaScriptToComplete(IWebDriver driver, TimeSpan? timeout = null)
+    public static void WaitForJavaScriptToComplete(IWebDriver driver, TestConfiguration config, TimeSpan? timeout = null)
     {
         Logger.LogDebug("Waiting for JavaScript to complete");
-        var actualTimeout = timeout ?? Config.Timeouts.DefaultTimeout;
+        var actualTimeout = timeout ?? config.Timeouts.DefaultTimeout;
         
-        WaitHelper.WaitForCondition(driver, driver =>
+        WaitHelper.WaitForCondition(driver, d =>
         {
-            var jsExecutor = (IJavaScriptExecutor)driver;
+            var jsExecutor = (IJavaScriptExecutor)d;
             return jsExecutor.ExecuteScript("return jQuery.active == 0 && document.readyState == 'complete'");
         }, actualTimeout);
         
@@ -139,10 +138,10 @@ public static class BrowserHelper
     /// <summary>
     /// Sets the browser viewport size using configuration defaults if not specified
     /// </summary>
-    public static void SetViewportSize(IWebDriver driver, int? width = null, int? height = null)
+    public static void SetViewportSize(IWebDriver driver, TestConfiguration config, int? width = null, int? height = null)
     {
-        var actualWidth = width ?? Config.Browser.WindowSize.Width;
-        var actualHeight = height ?? Config.Browser.WindowSize.Height;
+        var actualWidth = width ?? config.Browser.WindowSize.Width;
+        var actualHeight = height ?? config.Browser.WindowSize.Height;
         
         Logger.LogDebug("Setting viewport size to: {Width}x{Height}", actualWidth, actualHeight);
         driver.Manage().Window.Size = new System.Drawing.Size(actualWidth, actualHeight);
@@ -173,32 +172,32 @@ public static class BrowserHelper
     /// <summary>
     /// Resets the browser window to the configured default size
     /// </summary>
-    public static void ResetToDefaultSize(IWebDriver driver)
+    public static void ResetToDefaultSize(IWebDriver driver, TestConfiguration config)
     {
         Logger.LogDebug("Resetting browser window to default size from configuration");
-        SetViewportSize(driver);
+        SetViewportSize(driver, config);
     }
 
     /// <summary>
     /// Configures browser timeouts using configuration settings
     /// Note: Only configures page load timeout - no implicit wait to avoid mixing wait types
     /// </summary>
-    public static void ConfigureTimeouts(IWebDriver driver)
+    public static void ConfigureTimeouts(IWebDriver driver, TestConfiguration config)
     {
         Logger.LogDebug("Configuring browser timeouts from configuration");
         
         var timeouts = driver.Manage().Timeouts();
-        timeouts.PageLoad = Config.Timeouts.DefaultTimeout;
+        timeouts.PageLoad = config.Timeouts.DefaultTimeout;
         
         Logger.LogDebug("Browser timeouts configured: PageLoad={PageLoad}s", 
-            Config.Timeouts.DefaultTimeoutSeconds);
+            config.Timeouts.DefaultTimeoutSeconds);
     }
 
     /// <summary>
     /// Checks if the browser is running in headless mode (best effort detection)
     /// </summary>
-    public static bool IsHeadlessMode()
+    public static bool IsHeadlessMode(TestConfiguration config)
     {
-        return Config.Browser.Headless;
+        return config.Browser.Headless;
     }
 } 

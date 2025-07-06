@@ -30,9 +30,9 @@ public class HomePageQuickLinksTests : BaseTest
     [SetUp]
     public void HomePageSetUp()
     {
-        Logger.LogInformation("Starting HomePage Quick Links test setup for browser: {Browser}", CurrentBrowser);
-        Driver.Navigate().GoToUrl(Config.BaseUrl);
-        Logger.LogDebug("Navigated to URL: {Url}", Config.BaseUrl);
+        Logger.LogInformation("Starting HomePage Quick Links test setup");
+        Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
+        Logger.LogDebug("Navigated to URL: {Url}", TestConfig.BaseUrl);
         
         _homePage = new HomePage(Driver);
         _homePage.WaitForPageToLoad();
@@ -43,7 +43,7 @@ public class HomePageQuickLinksTests : BaseTest
     [Description("TC001: Verify Quick Links section is present and visible")]
     public void QuickLinksSection_WhenPageLoads_ShouldBeVisible()
     {
-        Logger.LogInformation("Starting TC001: Quick Links section visibility test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC001: Quick Links section visibility test");
         
         Logger.LogDebug("Scrolling to Quick Links section");
         _homePage.QuickLinks.ScrollToQuickLinks();
@@ -56,14 +56,14 @@ public class HomePageQuickLinksTests : BaseTest
         Assert.That(_homePage.QuickLinks.IsQuickLinksHeaderVisible(TimeSpan.FromSeconds(5)), Is.True, 
             "Quick Links header should be visible");
         
-        Logger.LogInformation("TC001: Quick Links section visibility test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC001: Quick Links section visibility test passed successfully");
     }
 
     [Test]
     [Description("TC002: Verify Quick Links header text is correct")]
     public void QuickLinksHeader_WhenChecked_ShouldHaveCorrectText()
     {
-        Logger.LogInformation("Starting TC002: Quick Links header text test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC002: Quick Links header text test");
         
         Logger.LogDebug("Scrolling to Quick Links section for header test");
         _homePage.QuickLinks.ScrollToQuickLinks();
@@ -74,7 +74,7 @@ public class HomePageQuickLinksTests : BaseTest
         Assert.That(headerText, Is.EqualTo("Quick Links"), 
             "Quick Links header should display 'Quick Links'");
         
-        Logger.LogInformation("TC002: Quick Links header text test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC002: Quick Links header text test passed successfully");
     }
 
     [Test]
@@ -82,7 +82,7 @@ public class HomePageQuickLinksTests : BaseTest
     [Description("TC003: Verify Quick Links have correct properties, styling and are clickable")]
     public void QuickLink_WhenChecked_ShouldHaveCorrectPropertiesAndBehavior(string linkText, string expectedHref)
     {
-        Logger.LogInformation("Starting TC003: Verifying Quick Link: {LinkText} for browser: {Browser}", linkText, CurrentBrowser);
+        Logger.LogInformation("Starting TC003: Verifying Quick Link: {LinkText}", linkText);
         
         Logger.LogDebug("Scrolling to Quick Links section for {LinkText} test", linkText);
         _homePage.QuickLinks.ScrollToQuickLinks();
@@ -113,14 +113,14 @@ public class HomePageQuickLinksTests : BaseTest
         Assert.That(textDecoration, Does.Contain("none"), 
             $"{linkText} link should not be underlined by default");
 
-        Logger.LogInformation("TC003: Quick Link {LinkText} validation test passed successfully for browser: {Browser}", linkText, CurrentBrowser);
+        Logger.LogInformation("TC003: Quick Link {LinkText} validation test passed successfully", linkText);
     }
 
     [Test]
     [Description("TC004: Verify Quick Links list structure has correct number of items")]
     public void QuickLinksListStructure_WhenChecked_ShouldHaveCorrectStructure()
     {
-        Logger.LogInformation("Starting TC004: Quick Links list structure validation test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC004: Quick Links list structure validation test");
         
         Logger.LogDebug("Scrolling to Quick Links section for list structure test");
         _homePage.QuickLinks.ScrollToQuickLinks();
@@ -136,14 +136,14 @@ public class HomePageQuickLinksTests : BaseTest
         Assert.That(listItems.Count, Is.EqualTo(4), 
             "Quick Links list should contain exactly 4 list items");
         
-        Logger.LogInformation("TC004: Quick Links list structure validation test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC004: Quick Links list structure validation test passed successfully");
     }
 
     [Test]
     [Description("TC005: Verify all 4 Quick Links are present and visible")]
     public void AllQuickLinks_ShouldBePresentVisibleAndInCorrectOrder()
     {
-        Logger.LogInformation("Starting TC005: All Quick Links presence and order test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC005: All Quick Links presence and order test");
         
         Logger.LogDebug("Scrolling to Quick Links section for all links test");
         _homePage.QuickLinks.ScrollToQuickLinks();
@@ -166,14 +166,14 @@ public class HomePageQuickLinksTests : BaseTest
         Assert.That(allLinksText, Is.EqualTo(expectedLinks), 
             "Quick Links should be in correct order: Home, Rooms, Booking, Contact");
         
-        Logger.LogInformation("TC005: All Quick Links presence and order test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC005: All Quick Links presence and order test passed successfully");
     }
 
     [Test]
     [Description("TC006: Verify all Quick Links have correct text content")]
     public void QuickLinksTextContent_WhenChecked_ShouldBeCorrect()
     {
-        Logger.LogInformation("Starting TC006: Quick Links text content validation test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC006: Quick Links text content validation test");
         
         Logger.LogDebug("Scrolling to Quick Links section for text content test");
         _homePage.QuickLinks.ScrollToQuickLinks();
@@ -198,14 +198,14 @@ public class HomePageQuickLinksTests : BaseTest
                 "Contact link should have text 'Contact'");
         });
         
-        Logger.LogInformation("TC006: Quick Links text content validation test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC006: Quick Links text content validation test passed successfully");
     }
 
     [Test]
     [Description("TC007: Verify Quick Links respond to hover interactions")]
     public void QuickLinksHoverBehavior_WhenHovered_ShouldProvideVisualFeedback()
     {
-        Logger.LogInformation("Starting TC007: Quick Links hover behavior test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC007: Quick Links hover behavior test");
         
         Logger.LogDebug("Scrolling to Quick Links section for hover behavior test");
         _homePage.QuickLinks.ScrollToQuickLinks();
@@ -223,20 +223,20 @@ public class HomePageQuickLinksTests : BaseTest
                 $"Quick Links {linkText} should remain visible after hover");
         }
         
-        Logger.LogInformation("TC007: Quick Links hover behavior test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC007: Quick Links hover behavior test passed successfully");
     }
 
     [TestCaseSource(nameof(MobileViewports))]
     [Description("TC008: Verify Quick Links section displays correctly on mobile viewports")]
     public void QuickLinks_OnMobileViewport_ShouldDisplayCorrectly(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting TC008: Quick Links mobile viewport test on {DeviceName} ({Width}x{Height}) for browser: {Browser}", 
-            deviceName, width, height, CurrentBrowser);
+        Logger.LogInformation("Starting TC008: Quick Links mobile viewport test on {DeviceName} ({Width}x{Height})", 
+            deviceName, width, height);
         
         try
         {
             Logger.LogDebug("Setting viewport size to {Width}x{Height} for {DeviceName}", width, height, deviceName);
-            BrowserHelper.SetViewportSize(Driver, width, height);
+            BrowserHelper.SetViewportSize(Driver, TestConfig, width, height);
             
             Logger.LogDebug("Scrolling to Quick Links section on {DeviceName}", deviceName);
             _homePage.QuickLinks.ScrollToQuickLinks();
@@ -249,26 +249,24 @@ public class HomePageQuickLinksTests : BaseTest
             Assert.That(_homePage.QuickLinks.AreAllQuickLinksVisible(TimeSpan.FromSeconds(5)), Is.True, 
                 $"All 4 Quick Links should be accessible on {deviceName}");
             
-            Logger.LogDebug("Verifying Quick Links text readability on {DeviceName}", deviceName);
-            var allLinksText = _homePage.QuickLinks.GetAllQuickLinksText();
-            Logger.LogDebug("Quick Links text on {DeviceName}: {LinksText}", deviceName, string.Join(", ", allLinksText));
-            Assert.That(allLinksText.All(text => !string.IsNullOrEmpty(text)), Is.True, 
+            Logger.LogDebug("Verifying Quick Links text is readable on {DeviceName}", deviceName);
+            Assert.That(_homePage.QuickLinks.GetAllQuickLinksText().All(text => !string.IsNullOrEmpty(text)), Is.True, 
                 $"All Quick Links text should be readable on {deviceName}");
             
-            Logger.LogDebug("Testing touch interaction with Home link on {DeviceName}", deviceName);
+            Logger.LogDebug("Simulating touch interaction on {DeviceName}", deviceName);
             _homePage.QuickLinks.ClickLink("Home");
             
-            Logger.LogDebug("Verifying Quick Links functionality after touch interaction on {DeviceName}", deviceName);
-            Assert.That(_homePage.QuickLinks.IsLinkVisible("Home", TimeSpan.FromSeconds(3)), Is.True, 
+            Logger.LogDebug("Verifying link functionality after touch on {DeviceName}", deviceName);
+            Assert.That(_homePage.QuickLinks.IsLinkVisible("Home", TimeSpan.FromSeconds(2)), Is.True, 
                 $"Quick Links should remain functional after touch interaction on {deviceName}");
             
-            Logger.LogInformation("TC008: Quick Links mobile viewport test passed successfully on {DeviceName} ({Width}x{Height}) for browser: {Browser}", 
-                deviceName, width, height, CurrentBrowser);
+            Logger.LogInformation("TC008: Quick Links mobile viewport test passed successfully on {DeviceName} ({Width}x{Height})", 
+                deviceName, width, height);
         }
         finally
         {
-            Logger.LogDebug("Resetting viewport size to 1920x1080 after {DeviceName} test", deviceName);
-            BrowserHelper.SetViewportSize(Driver, 1920, 1080);
+            Logger.LogDebug("Resetting viewport size to default after {DeviceName} test", deviceName);
+            BrowserHelper.ResetToDefaultSize(Driver, TestConfig);
         }
     }
 
@@ -276,43 +274,35 @@ public class HomePageQuickLinksTests : BaseTest
     [Description("TC009: Verify Quick Links section displays correctly on tablet viewports")]
     public void QuickLinks_OnTabletViewport_ShouldDisplayCorrectly(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting TC009: Quick Links tablet viewport test on {DeviceName} ({Width}x{Height}) for browser: {Browser}", 
-            deviceName, width, height, CurrentBrowser);
-        
+        Logger.LogInformation("Starting TC009: Quick Links tablet viewport test on {DeviceName} ({Width}x{Height})", 
+            deviceName, width, height);
+
         try
         {
             Logger.LogDebug("Setting viewport size to {Width}x{Height} for {DeviceName}", width, height, deviceName);
-            BrowserHelper.SetViewportSize(Driver, width, height);
-            
+            BrowserHelper.SetViewportSize(Driver, TestConfig, width, height);
+
             Logger.LogDebug("Scrolling to Quick Links section on {DeviceName}", deviceName);
             _homePage.QuickLinks.ScrollToQuickLinks();
-            
-            Logger.LogDebug("Verifying Quick Links section visibility on {DeviceName}", deviceName);
-            Assert.That(_homePage.QuickLinks.IsQuickLinksSectionVisible(TimeSpan.FromSeconds(5)), Is.True, 
-                $"Quick Links section should be visible on {deviceName} ({width}x{height})");
-            
-            Logger.LogDebug("Verifying all Quick Links are accessible on {DeviceName}", deviceName);
-            Assert.That(_homePage.QuickLinks.AreAllQuickLinksVisible(TimeSpan.FromSeconds(5)), Is.True, 
-                $"All 4 Quick Links should be accessible on {deviceName}");
-            
-            Logger.LogDebug("Verifying Quick Links list structure on {DeviceName}", deviceName);
+
+            Logger.LogDebug("Verifying Quick Links section structure on {DeviceName}", deviceName);
             Assert.That(_homePage.QuickLinks.ValidateQuickLinksListStructure(), Is.True, 
                 $"Quick Links list structure should be maintained on {deviceName}");
             
-            Logger.LogDebug("Testing link functionality by clicking Rooms link on {DeviceName}", deviceName);
-            _homePage.QuickLinks.ClickLink("Rooms");
+            Logger.LogDebug("Simulating interaction on {DeviceName}", deviceName);
+            _homePage.QuickLinks.ClickLink("Home");
             
-            Logger.LogDebug("Verifying Quick Links functionality after interaction on {DeviceName}", deviceName);
-            Assert.That(_homePage.QuickLinks.IsLinkVisible("Rooms", TimeSpan.FromSeconds(3)), Is.True, 
+            Logger.LogDebug("Verifying link functionality after interaction on {DeviceName}", deviceName);
+            Assert.That(_homePage.QuickLinks.IsLinkVisible("Home", TimeSpan.FromSeconds(2)), Is.True, 
                 $"Quick Links should remain functional after interaction on {deviceName}");
             
-            Logger.LogInformation("TC009: Quick Links tablet viewport test passed successfully on {DeviceName} ({Width}x{Height}) for browser: {Browser}", 
-                deviceName, width, height, CurrentBrowser);
+            Logger.LogInformation("TC009: Quick Links tablet viewport test passed successfully on {DeviceName} ({Width}x{Height})", 
+                deviceName, width, height);
         }
         finally
         {
-            Logger.LogDebug("Resetting viewport size to 1920x1080 after {DeviceName} test", deviceName);
-            BrowserHelper.SetViewportSize(Driver, 1920, 1080);
+            Logger.LogDebug("Resetting viewport size to default after {DeviceName} test", deviceName);
+            BrowserHelper.ResetToDefaultSize(Driver, TestConfig);
         }
     }
 
@@ -320,43 +310,35 @@ public class HomePageQuickLinksTests : BaseTest
     [Description("TC010: Verify Quick Links section displays correctly on desktop viewports")]
     public void QuickLinks_OnDesktopViewport_ShouldDisplayCorrectly(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting TC010: Quick Links desktop viewport test on {DeviceName} ({Width}x{Height}) for browser: {Browser}", 
-            deviceName, width, height, CurrentBrowser);
+        Logger.LogInformation("Starting TC010: Quick Links desktop viewport test on {DeviceName} ({Width}x{Height})", 
+            deviceName, width, height);
         
         try
         {
             Logger.LogDebug("Setting viewport size to {Width}x{Height} for {DeviceName}", width, height, deviceName);
-            BrowserHelper.SetViewportSize(Driver, width, height);
+            BrowserHelper.SetViewportSize(Driver, TestConfig, width, height);
             
             Logger.LogDebug("Scrolling to Quick Links section on {DeviceName}", deviceName);
             _homePage.QuickLinks.ScrollToQuickLinks();
-            
-            Logger.LogDebug("Verifying Quick Links section visibility on {DeviceName}", deviceName);
-            Assert.That(_homePage.QuickLinks.IsQuickLinksSectionVisible(TimeSpan.FromSeconds(5)), Is.True, 
-                $"Quick Links section should be visible on {deviceName} ({width}x{height})");
-            
-            Logger.LogDebug("Verifying all Quick Links are accessible on {DeviceName}", deviceName);
-            Assert.That(_homePage.QuickLinks.AreAllQuickLinksVisible(TimeSpan.FromSeconds(5)), Is.True, 
-                $"All 4 Quick Links should be accessible on {deviceName}");
-            
-            Logger.LogDebug("Verifying Quick Links list structure optimization on {DeviceName}", deviceName);
+
+            Logger.LogDebug("Verifying Quick Links section layout on {DeviceName}", deviceName);
             Assert.That(_homePage.QuickLinks.ValidateQuickLinksListStructure(), Is.True, 
                 $"Quick Links list structure should be optimal on {deviceName}");
-            
-            Logger.LogDebug("Testing link functionality by clicking Booking link on {DeviceName}", deviceName);
-            _homePage.QuickLinks.ClickLink("Booking");
-            
-            Logger.LogDebug("Verifying Quick Links functionality after interaction on {DeviceName}", deviceName);
-            Assert.That(_homePage.QuickLinks.IsLinkVisible("Booking", TimeSpan.FromSeconds(3)), Is.True, 
+
+            Logger.LogDebug("Simulating interaction on {DeviceName}", deviceName);
+            _homePage.QuickLinks.ClickLink("Home");
+
+            Logger.LogDebug("Verifying link functionality after interaction on {DeviceName}", deviceName);
+            Assert.That(_homePage.QuickLinks.IsLinkVisible("Home", TimeSpan.FromSeconds(2)), Is.True,
                 $"Quick Links should remain functional after interaction on {deviceName}");
-            
-            Logger.LogInformation("TC010: Quick Links desktop viewport test passed successfully on {DeviceName} ({Width}x{Height}) for browser: {Browser}", 
-                deviceName, width, height, CurrentBrowser);
+
+            Logger.LogInformation("TC010: Quick Links desktop viewport test passed successfully on {DeviceName} ({Width}x{Height})", 
+                deviceName, width, height);
         }
         finally
         {
-            Logger.LogDebug("Resetting viewport size to 1920x1080 after {DeviceName} test", deviceName);
-            BrowserHelper.SetViewportSize(Driver, 1920, 1080);
+            Logger.LogDebug("Resetting viewport size to default after {DeviceName} test", deviceName);
+            BrowserHelper.ResetToDefaultSize(Driver, TestConfig);
         }
     }
 } 

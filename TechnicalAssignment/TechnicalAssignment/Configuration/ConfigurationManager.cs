@@ -11,16 +11,13 @@ namespace TechnicalAssignment.Configuration;
 /// </summary>
 public sealed class ConfigurationManager
 {
-    private static readonly Lazy<ConfigurationManager> _instance = new(() => new ConfigurationManager());
     private readonly IConfiguration _configuration;
     private readonly TestConfiguration _testConfiguration;
     private readonly ILogger _logger;
 
-    public static ConfigurationManager Instance => _instance.Value;
-
-    private ConfigurationManager()
+    public ConfigurationManager(ILogger<ConfigurationManager> logger)
     {
-        _logger = LoggingHelper.CreateLogger<ConfigurationManager>();
+        _logger = logger;
         _configuration = BuildConfiguration();
         _testConfiguration = LoadTestConfiguration();
         ValidateConfiguration();
