@@ -48,4 +48,32 @@ public class HomePageSocialMediaIconsTests : BaseTest
             Assert.That(instagramHref, Does.Contain("instagram.com"), "Instagram icon should link to instagram.com.");
         });
     }
+
+    [Test]
+    [Description("Verify that clicking a social media icon opens the link in a new tab")]
+    public void SocialMediaLinks_ShouldOpenInNewTab()
+    {
+        Logger.LogInformation("Social media new tab test");
+
+        var socialMediaComponent = _homePage.SocialMedia;
+        
+        Logger.LogDebug("Scrolling to Social Media Icons section for new tab test");
+        socialMediaComponent.ScrollToSocialMediaIcons();
+        
+        Logger.LogDebug("Clicking Facebook icon to open in new tab");
+        socialMediaComponent.ClickFacebookIcon();
+        
+        Logger.LogDebug("Verifying new tab is opened");
+        Assert.That(Driver.WindowHandles.Count, Is.EqualTo(2), 
+            "Clicking a social media icon should open a new tab");
+        
+        Logger.LogDebug("Switching to new tab");
+        Driver.SwitchTo().Window(Driver.WindowHandles[^1]);
+        
+        Logger.LogDebug("Verifying new tab URL is correct");
+        Assert.That(Driver.Url, Does.Contain("facebook.com"), 
+            "New tab URL should be Facebook URL");
+        
+        Logger.LogInformation("Social media new tab test passed successfully");
+    }
 } 
