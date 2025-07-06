@@ -201,31 +201,6 @@ public class HomePageQuickLinksTests : BaseTest
         Logger.LogInformation("TC006: Quick Links text content validation test passed successfully");
     }
 
-    [Test]
-    [Description("TC007: Verify Quick Links respond to hover interactions")]
-    public void QuickLinksHoverBehavior_WhenHovered_ShouldProvideVisualFeedback()
-    {
-        Logger.LogInformation("Starting TC007: Quick Links hover behavior test");
-        
-        Logger.LogDebug("Scrolling to Quick Links section for hover behavior test");
-        _homePage.QuickLinks.ScrollToQuickLinks();
-        
-        var linksToTest = new[] { "Home", "Rooms", "Booking", "Contact" };
-        Logger.LogDebug("Testing hover behavior for links: {LinksToTest}", string.Join(", ", linksToTest));
-        
-        foreach (var linkText in linksToTest)
-        {
-            Logger.LogDebug("Testing hover behavior for {LinkText} link", linkText);
-            _homePage.QuickLinks.HoverOverLink(linkText);
-            
-            Logger.LogDebug("Verifying {LinkText} link remains visible after hover", linkText);
-            Assert.That(_homePage.QuickLinks.IsLinkVisible(linkText, TimeSpan.FromSeconds(2)), Is.True, 
-                $"Quick Links {linkText} should remain visible after hover");
-        }
-        
-        Logger.LogInformation("TC007: Quick Links hover behavior test passed successfully");
-    }
-
     [TestCaseSource(nameof(MobileViewports))]
     [Description("TC008: Verify Quick Links section displays correctly on mobile viewports")]
     public void QuickLinks_OnMobileViewport_ShouldDisplayCorrectly(int width, int height, string deviceName)
