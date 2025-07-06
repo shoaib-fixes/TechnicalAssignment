@@ -65,349 +65,37 @@ public class HomePageContactTests : BaseTest
         Logger.LogInformation("TC001: Contact form submission test with valid data passed successfully");
     }
 
-    [Test]
-    [Description("TC002: Verify name field is required")]
-    public void ContactForm_WithEmptyName_ShouldShowValidationError()
+    [TestCaseSource(typeof(ContactFormTestData), nameof(ContactFormTestData.ValidationTestCases))]
+    [Description("TC002-TC013: Verify contact form validation for various invalid inputs")]
+    public void ContactForm_WithInvalidData_ShouldShowValidationError(string description, ContactFormTestData.ContactInfo testData, string expectedError)
     {
-        Logger.LogInformation("Starting TC002: Name field validation test");
-        
-        Logger.LogDebug("Scrolling to contact form");
-        _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with empty name field");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm("", validData.Email, validData.Phone, validData.Subject, 
-            validData.Message);
-        
-        Logger.LogDebug("Submitting contact form");
-        _homePage.Contact.SubmitContactForm();
-        
-        Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when name field is empty");
-        
-        Logger.LogDebug("Verifying name validation error message");
-        var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("Name may not be blank"), 
-            "Should show 'Name may not be blank' validation error");
-        
-        Logger.LogInformation("TC002: Name field validation test passed successfully");
-    }
+        Logger.LogInformation("Starting validation test: {Description}", description);
 
-    [Test]
-    [Description("TC003: Verify email field is required")]
-    public void ContactForm_WithEmptyEmail_ShouldShowValidationError()
-    {
-        Logger.LogInformation("Starting TC003: Email field validation test");
-        
         Logger.LogDebug("Scrolling to contact form");
         _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with empty email field");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm(validData.Name, "", validData.Phone, validData.Subject, 
-            validData.Message);
-        
-        Logger.LogDebug("Submitting contact form");
-        _homePage.Contact.SubmitContactForm();
-        
-        Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when email field is empty");
-        
-        Logger.LogDebug("Verifying email validation error message");
-        var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("Email may not be blank"), 
-            "Should show 'Email may not be blank' validation error");
-        
-        Logger.LogInformation("TC003: Email field validation test passed successfully");
-    }
 
-    [Test]
-    [Description("TC004: Verify email field validates format")]
-    public void ContactForm_WithInvalidEmailFormat_ShouldShowValidationError()
-    {
-        Logger.LogInformation("Starting TC004: Email format validation test");
-        
-        Logger.LogDebug("Scrolling to contact form");
-        _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with invalid email format");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm(validData.Name, ContactFormTestData.InvalidEmailFormat, validData.Phone, validData.Subject, 
-            validData.Message);
-        
-        Logger.LogDebug("Submitting contact form");
-        _homePage.Contact.SubmitContactForm();
-        
-        Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when email format is invalid");
-        
-        Logger.LogDebug("Verifying email format validation error message");
-        var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("must be a well-formed email address"), 
-            $"Should show 'must be a well-formed email address' validation error. Found errors: {string.Join(", ", validationErrors)}");
-        
-        Logger.LogInformation("TC004: Email format validation test passed successfully");
-    }
+        Logger.LogDebug("Filling contact form with invalid data for '{Description}'", description);
+        _homePage.Contact.FillContactForm(
+            name: testData.Name,
+            email: testData.Email,
+            phone: testData.Phone,
+            subject: testData.Subject,
+            message: testData.Message
+        );
 
-    [Test]
-    [Description("TC005: Verify phone field is required")]
-    public void ContactForm_WithEmptyPhone_ShouldShowValidationError()
-    {
-        Logger.LogInformation("Starting TC005: Phone field validation test");
-        
-        Logger.LogDebug("Scrolling to contact form");
-        _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with empty phone field");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm(validData.Name, validData.Email, "", validData.Subject, 
-            validData.Message);
-        
         Logger.LogDebug("Submitting contact form");
         _homePage.Contact.SubmitContactForm();
-        
-        Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when phone field is empty");
-        
-        Logger.LogDebug("Verifying phone validation error message");
-        var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("Phone may not be blank"), 
-            "Should show 'Phone may not be blank' validation error");
-        
-        Logger.LogInformation("TC005: Phone field validation test passed successfully");
-    }
 
-    [Test]
-    [Description("TC006: Verify phone field minimum length validation")]
-    public void ContactForm_WithShortPhone_ShouldShowValidationError()
-    {
-        Logger.LogInformation("Starting TC006: Phone minimum length validation test");
-        
-        Logger.LogDebug("Scrolling to contact form");
-        _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with short phone number");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm(validData.Name, validData.Email, ContactFormTestData.ShortPhone, validData.Subject, 
-            validData.Message);
-        
-        Logger.LogDebug("Submitting contact form");
-        _homePage.Contact.SubmitContactForm();
-        
         Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when phone number is too short");
-        
-        Logger.LogDebug("Verifying phone length validation error message");
-        var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("Phone must be between 11 and 21 characters."), 
-            "Should show 'Phone must be between 11 and 21 characters.' validation error");
-        
-        Logger.LogInformation("TC006: Phone minimum length validation test passed successfully");
-    }
+        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True,
+            "Validation errors should appear for invalid data");
 
-    [Test]
-    [Description("TC007: Verify phone field maximum length validation")]
-    public void ContactForm_WithLongPhone_ShouldShowValidationError()
-    {
-        Logger.LogInformation("Starting TC007: Phone maximum length validation test");
-        
-        Logger.LogDebug("Scrolling to contact form");
-        _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with long phone number");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm(validData.Name, validData.Email, ContactFormTestData.LongPhone, validData.Subject, 
-            validData.Message);
-        
-        Logger.LogDebug("Submitting contact form");
-        _homePage.Contact.SubmitContactForm();
-        
-        Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when phone number is too long");
-        
-        Logger.LogDebug("Verifying phone length validation error message");
+        Logger.LogDebug("Verifying validation error message");
         var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("Phone must be between 11 and 21 characters."), 
-            "Should show 'Phone must be between 11 and 21 characters.' validation error");
-        
-        Logger.LogInformation("TC007: Phone maximum length validation test passed successfully");
-    }
+        Assert.That(validationErrors, Does.Contain(expectedError),
+            $"Should show validation error '{expectedError}' for {description}. Found errors: {string.Join(", ", validationErrors)}");
 
-    [Test]
-    [Description("TC008: Verify subject field is required")]
-    public void ContactForm_WithEmptySubject_ShouldShowValidationError()
-    {
-        Logger.LogInformation("Starting TC008: Subject field validation test");
-        
-        Logger.LogDebug("Scrolling to contact form");
-        _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with empty subject field");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm(validData.Name, validData.Email, validData.Phone, "", 
-            validData.Message);
-        
-        Logger.LogDebug("Submitting contact form");
-        _homePage.Contact.SubmitContactForm();
-        
-        Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when subject field is empty");
-        
-        Logger.LogDebug("Verifying subject validation error message");
-        var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("Subject may not be blank"), 
-            "Should show 'Subject may not be blank' validation error");
-        
-        Logger.LogInformation("TC008: Subject field validation test passed successfully");
-    }
-
-    [Test]
-    [Description("TC009: Verify subject field minimum length validation")]
-    public void ContactForm_WithShortSubject_ShouldShowValidationError()
-    {
-        Logger.LogInformation("Starting TC009: Subject minimum length validation test");
-        
-        Logger.LogDebug("Scrolling to contact form");
-        _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with short subject");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm(validData.Name, validData.Email, validData.Phone, ContactFormTestData.ShortSubject, 
-            validData.Message);
-        
-        Logger.LogDebug("Submitting contact form");
-        _homePage.Contact.SubmitContactForm();
-        
-        Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when subject is too short");
-        
-        Logger.LogDebug("Verifying subject length validation error message");
-        var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("Subject must be between 5 and 100 characters."), 
-            "Should show 'Subject must be between 5 and 100 characters.' validation error");
-        
-        Logger.LogInformation("TC009: Subject minimum length validation test passed successfully");
-    }
-
-    [Test]
-    [Description("TC010: Verify subject field maximum length validation")]
-    public void ContactForm_WithLongSubject_ShouldShowValidationError()
-    {
-        Logger.LogInformation("Starting TC010: Subject maximum length validation test");
-        
-        Logger.LogDebug("Scrolling to contact form");
-        _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with long subject (101 characters)");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm(validData.Name, validData.Email, validData.Phone, ContactFormTestData.LongSubject, 
-            validData.Message);
-        
-        Logger.LogDebug("Submitting contact form");
-        _homePage.Contact.SubmitContactForm();
-        
-        Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when subject is too long");
-        
-        Logger.LogDebug("Verifying subject length validation error message");
-        var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("Subject must be between 5 and 100 characters."), 
-            "Should show 'Subject must be between 5 and 100 characters.' validation error");
-        
-        Logger.LogInformation("TC010: Subject maximum length validation test passed successfully");
-    }
-
-    [Test]
-    [Description("TC011: Verify message field is required")]
-    public void ContactForm_WithEmptyMessage_ShouldShowValidationError()
-    {
-        Logger.LogInformation("Starting TC011: Message field validation test");
-        
-        Logger.LogDebug("Scrolling to contact form");
-        _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with empty message field");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm(validData.Name, validData.Email, validData.Phone, validData.Subject, "");
-        
-        Logger.LogDebug("Submitting contact form");
-        _homePage.Contact.SubmitContactForm();
-        
-        Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when message field is empty");
-        
-        Logger.LogDebug("Verifying message validation error message");
-        var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("Message may not be blank"), 
-            "Should show 'Message may not be blank' validation error");
-        
-        Logger.LogInformation("TC011: Message field validation test passed successfully");
-    }
-
-    [Test]
-    [Description("TC012: Verify message field minimum length validation")]
-    public void ContactForm_WithShortMessage_ShouldShowValidationError()
-    {
-        Logger.LogInformation("Starting TC012: Message minimum length validation test");
-        
-        Logger.LogDebug("Scrolling to contact form");
-        _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with short message");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm(validData.Name, validData.Email, validData.Phone, validData.Subject, ContactFormTestData.ShortMessage);
-        
-        Logger.LogDebug("Submitting contact form");
-        _homePage.Contact.SubmitContactForm();
-        
-        Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when message is too short");
-        
-        Logger.LogDebug("Verifying message length validation error message");
-        var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("Message must be between 20 and 2000 characters."), 
-            "Should show 'Message must be between 20 and 2000 characters.' validation error");
-        
-        Logger.LogInformation("TC012: Message minimum length validation test passed successfully");
-    }
-
-    [Test]
-    [Description("TC013: Verify message field maximum length validation")]
-    public void ContactForm_WithLongMessage_ShouldShowValidationError()
-    {
-        Logger.LogInformation("Starting TC013: Message maximum length validation test");
-        
-        Logger.LogDebug("Scrolling to contact form");
-        _homePage.Contact.ScrollToContactForm();
-        
-        Logger.LogDebug("Filling contact form with long message (2001 characters)");
-        var validData = ContactFormTestData.ValidContact;
-        _homePage.Contact.FillContactForm(validData.Name, validData.Email, validData.Phone, validData.Subject, ContactFormTestData.LongMessage);
-        
-        Logger.LogDebug("Submitting contact form");
-        _homePage.Contact.SubmitContactForm();
-        
-        Logger.LogDebug("Waiting for validation errors to appear");
-        Assert.That(_homePage.Contact.AreContactValidationErrorsVisible(TimeSpan.FromSeconds(5)), Is.True, 
-            "Validation errors should appear when message is too long");
-        
-        Logger.LogDebug("Verifying message length validation error message");
-        var validationErrors = _homePage.Contact.GetContactValidationErrors();
-        Assert.That(validationErrors, Does.Contain("Message must be between 20 and 2000 characters."), 
-            "Should show 'Message must be between 20 and 2000 characters.' validation error");
-        
-        Logger.LogInformation("TC013: Message maximum length validation test passed successfully");
+        Logger.LogInformation("Validation test '{Description}' passed successfully", description);
     }
 
     [Test]

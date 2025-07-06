@@ -75,4 +75,23 @@ public static class ContactFormTestData
     public static string LongSubject = new string('A', 101);
     public static string ShortMessage = "Short message";
     public static string LongMessage = new string('A', 2001);
+    
+    public static IEnumerable<object[]> ValidationTestCases
+    {
+        get
+        {
+            yield return new object[] { "Name is empty", ValidContact with { Name = "" }, "Name may not be blank" };
+            yield return new object[] { "Email is empty", ValidContact with { Email = "" }, "Email may not be blank" };
+            yield return new object[] { "Email is invalid", ValidContact with { Email = InvalidEmailFormat }, "must be a well-formed email address" };
+            yield return new object[] { "Phone is empty", ValidContact with { Phone = "" }, "Phone may not be blank" };
+            yield return new object[] { "Phone is too short", ValidContact with { Phone = ShortPhone }, "Phone must be between 11 and 21 characters." };
+            yield return new object[] { "Phone is too long", ValidContact with { Phone = LongPhone }, "Phone must be between 11 and 21 characters." };
+            yield return new object[] { "Subject is empty", ValidContact with { Subject = "" }, "Subject may not be blank" };
+            yield return new object[] { "Subject is too short", ValidContact with { Subject = ShortSubject }, "Subject must be between 5 and 100 characters." };
+            yield return new object[] { "Subject is too long", ValidContact with { Subject = LongSubject }, "Subject must be between 5 and 100 characters." };
+            yield return new object[] { "Message is empty", ValidContact with { Message = "" }, "Message may not be blank" };
+            yield return new object[] { "Message is too short", ValidContact with { Message = ShortMessage }, "Message must be between 20 and 2000 characters." };
+            yield return new object[] { "Message is too long", ValidContact with { Message = LongMessage }, "Message must be between 20 and 2000 characters." };
+        }
+    }
 } 
