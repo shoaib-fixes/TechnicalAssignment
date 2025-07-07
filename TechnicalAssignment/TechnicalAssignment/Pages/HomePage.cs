@@ -14,6 +14,7 @@ public class HomePage : BasePage
     public HomePageNavigationComponent SocialMedia { get; }
     public HomePageQuickLinksComponent QuickLinks { get; }
     public HomePageContactComponent Contact { get; }
+    public HomePageBookingComponent Booking { get; }
 
     public HomePage(IWebDriver driver) : base(driver)
     {
@@ -21,6 +22,7 @@ public class HomePage : BasePage
         SocialMedia = new HomePageNavigationComponent(driver, Logger);
         QuickLinks = new HomePageQuickLinksComponent(driver, Logger);
         Contact = new HomePageContactComponent(driver, Logger);
+        Booking = new HomePageBookingComponent(driver, Logger);
     }
 
     public override bool IsPageLoaded(TimeSpan? timeout = null)
@@ -41,5 +43,11 @@ public class HomePage : BasePage
         Logger.LogDebug("Waiting for HomePage to load");
         WaitHelper.WaitForElement(Driver, PageLoadIndicator, timeout ?? TimeSpan.FromSeconds(30));
         Logger.LogDebug("HomePage loaded successfully");
+    }
+
+    public void ScrollToRoomsSection()
+    {
+        Logger.LogDebug("Scrolling to rooms section");
+        Navigation.ClickRoomsLink();
     }
 } 
