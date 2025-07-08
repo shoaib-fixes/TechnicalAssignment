@@ -33,7 +33,7 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
             (room2, "Double", true, 150, (IEnumerable<string>)new List<string> { "TV" }),
             (room3, "Family", false, 300, (IEnumerable<string>)new List<string> { "Views" })
         };
-        _roomsPage.BulkCreateRooms(roomConfigurations);
+        BulkCreateAndTrackRooms(roomConfigurations);
 
         Logger.LogDebug("Deleting middle room {Room2}", room2);
         _roomsPage.DeleteRoom(room2);
@@ -77,6 +77,7 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Creating room {RoomNumber} for deletion test", roomNumber);
         _roomsPage.CreateRoom(roomNumber, "Single", false, 100, new List<string> { "WiFi" });
+        TrackRoomForCleanup(roomNumber);
         RefreshAndWaitForPage();
         
         Logger.LogDebug("Verifying room {RoomNumber} is present before deletion", roomNumber);
@@ -106,6 +107,7 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
         
         Logger.LogDebug("Creating room {RoomNumber} with type {RoomType} and price {Price}", roomNumber, roomType, price);
         _roomsPage.CreateRoom(roomNumber, roomType, true, price, features);
+        TrackRoomForCleanup(roomNumber);
 
         Logger.LogDebug("Navigating to public home page");
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);

@@ -94,6 +94,26 @@ public static class ElementHelper
     }
 
     /// <summary>
+    /// Safely clears the content of an input element.
+    /// </summary>
+    public static void SafeClear(IWebDriver driver, By locator, TimeSpan? timeout = null)
+    {
+        Logger.LogDebug("Attempting to clear element: {Locator}", locator);
+        
+        try
+        {
+            var element = WaitHelper.WaitForElement(driver, locator, timeout);
+            element.Clear();
+            Logger.LogDebug("Successfully cleared element: {Locator}", locator);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to clear element: {Locator}", locator);
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Safely gets text from an element
     /// </summary>
     public static string GetElementText(IWebDriver driver, By locator, TimeSpan? timeout = null)

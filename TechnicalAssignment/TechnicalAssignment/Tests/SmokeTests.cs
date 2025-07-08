@@ -50,11 +50,10 @@ public class SmokeTests : BaseTest
     [Test(Description = "Verify basic navigation to a different section of the page works")]
     public void Navigation_ClickingRoomsLink_ShouldNavigateToRoomsSection()
     {
-        Logger.LogInformation("Verifying navigation to Rooms section.");
-        _homePage.QuickLinks.ScrollToQuickLinks();
-        _homePage.QuickLinks.ClickLink("Rooms");
+        Logger.LogInformation("Verifying navigation to Rooms section via main navigation bar.");
+        _homePage.Navigation.ClickRoomsLink();
         WaitHelper.WaitForCondition(Driver, d => d.Url.Contains("#rooms"), TimeSpan.FromSeconds(5));
-        Assert.That(Driver.Url, Does.Contain("#rooms"), "Clicking 'Rooms' link should navigate to the rooms section.");
+        Assert.That(Driver.Url, Does.Contain("#rooms"), "Clicking 'Rooms' link from the main navigation should navigate to the rooms section.");
     }
     
     [Test(Description = "Verify the site is responsive on a mobile viewport")]

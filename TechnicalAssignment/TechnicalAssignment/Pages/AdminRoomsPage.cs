@@ -43,9 +43,6 @@ public class AdminRoomsPage : BasePage
 
     public void CreateRoom(string roomNumber, string type, bool accessible, string price, IEnumerable<string> features)
     {
-        Driver.FindElement(RoomNumberInput).Clear();
-        Driver.FindElement(RoomPriceInput).Clear();
-        
         ElementHelper.SafeSendKeys(Driver, RoomNumberInput, roomNumber);
         if (!string.IsNullOrEmpty(type))
             ElementHelper.SelectDropdownByText(Driver, TypeSelect, type);
@@ -114,13 +111,13 @@ public class AdminRoomsPage : BasePage
         }
     }
 
-    public string GetErrorAlertText() => Driver.FindElement(ErrorAlert).Text.Trim();
+    public string GetErrorAlertText() => ElementHelper.GetElementText(Driver, ErrorAlert);
 
     public bool IsErrorAlertVisible() => ElementHelper.IsElementPresent(Driver, By.CssSelector("div.alert-danger"));
 
     public string GetFullErrorMessage()
     {
-        var errorAlert = Driver.FindElement(By.CssSelector("div.alert-danger"));
+        var errorAlert = WaitHelper.WaitForElement(Driver, By.CssSelector("div.alert-danger"));
         return errorAlert.Text.Trim();
     }
 
@@ -200,6 +197,7 @@ public class AdminRoomsPage : BasePage
 
     public void BulkDeleteRooms(IEnumerable<int> roomNumbers)
     {
+        var exceptions = new List<Exception>();
         foreach (var roomNumber in roomNumbers)
         {
             try
@@ -211,7 +209,13 @@ public class AdminRoomsPage : BasePage
             catch (Exception ex)
             {
                 Logger.LogWarning(ex, "Failed to delete room {RoomNumber}", roomNumber);
+                exceptions.Add(new InvalidOperationException($"Failed to delete room {roomNumber}", ex));
             }
+        }
+        
+        if (exceptions.Any())
+        {
+            throw new AggregateException("One or more rooms failed to be deleted during bulk operation.", exceptions);
         }
     }
 

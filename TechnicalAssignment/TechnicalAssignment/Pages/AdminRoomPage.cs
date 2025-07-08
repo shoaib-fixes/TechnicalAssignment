@@ -35,10 +35,17 @@ public class AdminRoomPage : BasePage
 
     public override bool IsPageLoaded(TimeSpan? timeout = null)
     {
-        return ElementHelper.IsElementVisible(Driver, RoomNumberInput, timeout);
+        return ElementHelper.IsElementVisible(Driver, EditButton, timeout) || 
+               ElementHelper.IsElementVisible(Driver, RoomNumberInput, timeout);
     }
 
     public override void WaitForPageToLoad(TimeSpan? timeout = null)
+    {
+        WaitHelper.WaitForCondition(Driver, d => 
+            IsElementVisible(d, EditButton) || IsElementVisible(d, RoomNumberInput), timeout);
+    }
+
+    public void WaitForEditMode(TimeSpan? timeout = null)
     {
         WaitHelper.WaitForElement(Driver, RoomNumberInput, timeout);
     }
@@ -49,6 +56,12 @@ public class AdminRoomPage : BasePage
         {
             ElementHelper.SafeClick(Driver, EditButton, timeout);
         }
+    }
+
+    public void ClickEditButtonAndWait(TimeSpan? timeout = null)
+    {
+        ClickEditButton(timeout);
+        WaitForEditMode(timeout);
     }
 
     public string GetRoomNumber() => Driver.FindElement(RoomNumberInput).GetAttribute("value") ?? string.Empty;
@@ -208,9 +221,27 @@ public class AdminRoomPage : BasePage
             var image = WaitHelper.WaitForElement(Driver, RoomImage);
             return image.GetAttribute("naturalWidth") == "0";
         }
-        catch (Exception)
+        catch (WebDriverTimeoutException)
         {
+            // If the image element doesn't appear in time, consider it a fallback state.
             return true;
+        }
+        catch (StaleElementReferenceException)
+        {
+            // If the element becomes stale, it's likely due to a page update; treat as fallback.
+            return true;
+        }
+    }
+
+    private static bool IsElementVisible(IWebDriver driver, By locator)
+    {
+        try
+        {
+            return driver.FindElement(locator).Displayed;
+        }
+        catch (NoSuchElementException)
+        {
+            return false;
         }
     }
 } 

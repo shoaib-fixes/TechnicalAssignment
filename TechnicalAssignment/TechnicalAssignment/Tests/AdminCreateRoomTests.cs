@@ -37,6 +37,7 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
                     roomNumber, type, accessible, price);
                 
                 _roomsPage.CreateRoom(roomNumber, type, accessible, price, features);
+                TrackRoomForCleanup(roomNumber);
                 RefreshAndWaitForPage();
                 
                 Logger.LogDebug("Verifying room {RoomNumber} was created correctly", roomNumber);
@@ -85,6 +86,7 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Creating initial room {RoomNumber}", roomNumber);
         _roomsPage.CreateRoom(roomNumber, "Single", false, 100, new List<string> { "WiFi" });
+        TrackRoomForCleanup(roomNumber);
         RefreshAndWaitForPage();
 
         Logger.LogDebug("Attempting to create duplicate room with number {RoomNumber}", roomNumber);
@@ -105,6 +107,7 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Attempting to create room {RoomNumber} with non-numeric price", roomNumber);
         _roomsPage.CreateRoom(roomNumber.ToString(), "Single", false, "invalid", new List<string>());
+        TrackRoomForCleanup(roomNumber);
         
         Logger.LogDebug("Verifying error message appears for non-numeric price");
         Assert.That(_roomsPage.IsErrorAlertVisible(), Is.True, "Error alert should be displayed for non-numeric price");
@@ -139,6 +142,7 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Attempting to create room {RoomNumber} with invalid price {Price}", roomNumber, price);
         _roomsPage.CreateRoom(roomNumber, "Single", false, price, new List<string>());
+        TrackRoomForCleanup(roomNumber);
 
         Logger.LogDebug("Verifying error message for invalid price is visible");
         Assert.That(_roomsPage.IsErrorAlertVisible(), Is.True, "Error alert should be displayed for invalid price");
@@ -161,6 +165,7 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         var price = 150.75m;
         Logger.LogDebug("Creating room {RoomNumber} with decimal price {Price}", roomNumber, price);
         _roomsPage.CreateRoom(roomNumber, "Suite", false, price, new List<string> { "TV" });
+        TrackRoomForCleanup(roomNumber);
         RefreshAndWaitForPage();
         
         Logger.LogDebug("Verifying room {RoomNumber} was created successfully with decimal price", roomNumber);
@@ -184,6 +189,7 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Creating room {RoomNumber} with no features", roomNumber);
         _roomsPage.CreateRoom(roomNumber, "Single", false, 100, new List<string>());
+        TrackRoomForCleanup(roomNumber);
         RefreshAndWaitForPage();
         
         Logger.LogDebug("Verifying room {RoomNumber} was created successfully with no features", roomNumber);

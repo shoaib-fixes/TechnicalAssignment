@@ -33,21 +33,23 @@ public class AdminLoginPage : BasePage
         WaitHelper.WaitForElement(Driver, LoginButton, timeout);
     }
 
-    public AdminDashboardPage Login(string username, string password)
+    public AdminNavBarComponent Login(string username, string password)
     {
-        Logger.LogDebug("Logging into admin panel with username: {Username}", username);
-        
         ElementHelper.SafeSendKeys(Driver, UsernameField, username);
         ElementHelper.SafeSendKeys(Driver, PasswordField, password);
+
+        Logger.LogDebug("Attempting to login with username: {Username}", username);
         ElementHelper.SafeClick(Driver, LoginButton);
+
+        Logger.LogDebug("Login submitted. Waiting for dashboard to load.");
         
-        WaitHelper.WaitForElement(Driver, MessagesLink, TimeSpan.FromSeconds(10));
-        Logger.LogDebug("Login successful - admin dashboard loaded");
+        var navBar = new AdminNavBarComponent(Driver);
+        navBar.WaitForPageToLoad();
         
-        return new AdminDashboardPage(Driver);
+        return navBar;
     }
 
-    public bool IsOnLoginPage()
+    public bool IsOnLoginPage(TimeSpan? timeout = null)
     {
         Logger.LogDebug("Checking if on admin login page");
         return IsPageLoaded(TimeSpan.FromSeconds(2));

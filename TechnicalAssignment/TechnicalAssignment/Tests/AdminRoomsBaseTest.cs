@@ -16,12 +16,11 @@ public abstract class AdminRoomsBaseTest : BaseTest
 {
     protected AdminRoomsPage _roomsPage = null!;
     protected AdminRoomPage _roomPage = null!;
-    protected AdminDashboardPage _adminDashboard = null!;
+    protected AdminNavBarComponent _adminNavBar = null!;
     protected AdminLoginPage _adminLogin = null!;
     
     private readonly List<string> _roomsToCleanup = new();
-    private readonly Random _random = new();
-
+    
     protected string CurrentBrowser => TestConfig.Browser.DefaultBrowser;
     protected ConfigurationManager Config => new ConfigurationManager(LoggingHelper.CreateLogger<ConfigurationManager>());
 
@@ -36,11 +35,11 @@ public abstract class AdminRoomsBaseTest : BaseTest
         _adminLogin.WaitForPageToLoad();
         
         Logger.LogDebug("Logging into admin panel");
-        _adminDashboard = _adminLogin.Login(TestConfig.AdminCredentials.Username, TestConfig.AdminCredentials.Password);
-        _adminDashboard.WaitForPageToLoad();
+        _adminNavBar = _adminLogin.Login(TestConfig.AdminCredentials.Username, TestConfig.AdminCredentials.Password);
+        _adminNavBar.WaitForPageToLoad();
         
         Logger.LogDebug("Navigating to rooms section");
-        _adminDashboard.NavigateToRooms();
+        _adminNavBar.NavigateToRooms();
         
         _roomsPage = new AdminRoomsPage(Driver);
         _roomsPage.WaitForPageToLoad();
@@ -51,6 +50,7 @@ public abstract class AdminRoomsBaseTest : BaseTest
     [TearDown]
     public void AdminRoomsTearDown()
     {
+        var cleanupExceptions = new List<Exception>();
         try
         {
             Logger.LogInformation("Starting admin rooms cleanup");
@@ -79,7 +79,9 @@ public abstract class AdminRoomsBaseTest : BaseTest
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning(ex, "Failed to cleanup room {RoomNumber}", roomNumber);
+                        var cleanupEx = new InvalidOperationException($"Failed to cleanup room {roomNumber}", ex);
+                        Logger.LogWarning(cleanupEx, "Cleanup failure for room {RoomNumber}", roomNumber);
+                        cleanupExceptions.Add(cleanupEx);
                     }
                 }
                 
@@ -89,51 +91,52 @@ public abstract class AdminRoomsBaseTest : BaseTest
         }
         catch (Exception ex)
         {
-            Logger.LogWarning(ex, "Error during admin rooms cleanup");
+            var teardownEx = new InvalidOperationException("A critical error occurred during the main teardown process, interrupting cleanup.", ex);
+            Logger.LogWarning(teardownEx, "Critical teardown error");
+            cleanupExceptions.Add(teardownEx);
         }
         finally
         {
             try
             {
-                if (_adminDashboard != null)
+                if (_adminNavBar != null)
                 {
                     Logger.LogDebug("Logging out of admin panel");
-                    _adminDashboard.Logout();
+                    _adminNavBar.Logout();
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogWarning(ex, "Error during admin logout");
+                var logoutEx = new InvalidOperationException("Failed to logout during cleanup.", ex);
+                Logger.LogWarning(logoutEx, "Error during admin logout");
+                cleanupExceptions.Add(logoutEx);
+            }
+            
+            if (cleanupExceptions.Any())
+            {
+                throw new AggregateException($"Test teardown failed with {cleanupExceptions.Count} error(s). See inner exceptions for details.", cleanupExceptions);
             }
         }
     }
 
     /// <summary>
-    /// Generates a random room number within the valid range for creation.
-    /// The application's validator for room creation is set to 1-999.
-    /// However, since some tests calculate the price as (room number + 100) and the maximum allowed price is 1000,
-    /// this method restricts the range to 1-899 to ensure test data remains valid.
+    /// Generates a random room number, tracking it for automated cleanup.
+    /// This method delegates number generation to RoomNumberFactory to separate concerns.
     /// </summary>
     /// <returns>A valid random room number for creation tests.</returns>
     protected int GetRandomRoomNumber()
     {
-        var roomNumber = _random.Next(1, 900); // 1 to 899
-        TrackRoomForCleanup(roomNumber.ToString());
-        return roomNumber;
+        return RoomNumberFactory.GetRandomRoomNumber();
     }
 
     /// <summary>
-    /// Generates a room number outside the standard validation range (e.g., > 1000).
-    /// This is used specifically for testing scenarios where the edit functionality
-    /// has a validation gap and does not correctly enforce the maximum room number limit,
-    /// unlike the creation form.
+    /// Generates a room number outside the standard validation range, tracking it for automated cleanup.
+    /// This method delegates number generation to RoomNumberFactory to separate concerns.
     /// </summary>
     /// <returns>A random room number intended to bypass weak validation.</returns>
     protected int GetExoticRoomNumber()
     {
-        var roomNumber = _random.Next(1001, 9999);
-        TrackRoomForCleanup(roomNumber.ToString());
-        return roomNumber;
+        return RoomNumberFactory.GetExoticRoomNumber();
     }
 
     protected void TrackRoomForCleanup(string roomNumber)
@@ -165,14 +168,14 @@ public abstract class AdminRoomsBaseTest : BaseTest
 
     protected void CreateAndTrackRoom(int roomNumber, string type, bool accessible, int price, IEnumerable<string> features)
     {
-        TrackRoomForCleanup(roomNumber);
         _roomsPage.CreateRoom(roomNumber, type, accessible, price, features);
+        TrackRoomForCleanup(roomNumber);
     }
 
     protected void CreateAndTrackRoom(int roomNumber, string type, bool accessible, decimal price, IEnumerable<string> features)
     {
-        TrackRoomForCleanup(roomNumber);
         _roomsPage.CreateRoom(roomNumber, type, accessible, price, features);
+        TrackRoomForCleanup(roomNumber);
     }
 
     protected void BulkCreateAndTrackRooms(IEnumerable<(int RoomNumber, string Type, bool Accessible, int Price, IEnumerable<string> Features)> roomConfigurations)

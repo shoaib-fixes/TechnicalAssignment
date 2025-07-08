@@ -5,7 +5,7 @@ using TechnicalAssignment.Utilities;
 
 namespace TechnicalAssignment.Pages;
 
-public class AdminDashboardPage : BasePage
+public class AdminNavBarComponent : BasePage
 {
     private static readonly By MessagesLink = By.CssSelector("a[href='/admin/message']");
     private static readonly By RoomsLink = By.CssSelector("a[href='/admin/rooms']");
@@ -14,19 +14,19 @@ public class AdminDashboardPage : BasePage
     private static readonly By FrontPageLink = By.Id("frontPageLink");
     private static readonly By LogoutButton = By.CssSelector(".btn-outline-danger");
 
-    public AdminDashboardPage(IWebDriver driver) : base(driver)
+    public AdminNavBarComponent(IWebDriver driver) : base(driver)
     {
     }
 
     public override bool IsPageLoaded(TimeSpan? timeout = null)
     {
-        Logger.LogDebug("Checking if admin dashboard page is loaded");
+        Logger.LogDebug("Checking if admin nav bar component is loaded");
         return ElementHelper.IsElementVisible(Driver, MessagesLink, timeout);
     }
 
     public override void WaitForPageToLoad(TimeSpan? timeout = null)
     {
-        Logger.LogDebug("Waiting for admin dashboard page to load");
+        Logger.LogDebug("Waiting for admin nav bar component to load");
         WaitHelper.WaitForElement(Driver, MessagesLink, timeout);
     }
 

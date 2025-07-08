@@ -178,15 +178,15 @@ public class HomePageContactTests : BaseTest
         
         adminLoginPage.Login(TestConfig.AdminCredentials.Username, TestConfig.AdminCredentials.Password);
         
-        var adminDashboard = new AdminDashboardPage(Driver);
-        adminDashboard.WaitForPageToLoad();
+        var adminNavBar = new AdminNavBarComponent(Driver);
+        adminNavBar.WaitForPageToLoad();
         
         Logger.LogDebug("Verifying successful login");
-        Assert.That(adminDashboard.IsLoggedIn(), Is.True, 
+        Assert.That(adminNavBar.IsLoggedIn(), Is.True, 
             "Should be successfully logged into admin panel");
         
         Logger.LogDebug("Step 8: Navigating to Messages section");
-        var adminMessagesPage = adminDashboard.NavigateToMessages();
+        var adminMessagesPage = adminNavBar.NavigateToMessages();
         
         Logger.LogDebug("Step 9-10: Verifying test message appears in messages list");
         Assert.That(adminMessagesPage.IsMessagePresent(e2eData.Name, e2eData.Subject), Is.True, 
@@ -375,11 +375,11 @@ public class HomePageContactTests : BaseTest
         Logger.LogDebug("Step 3: Logging into admin panel");
         adminLoginPage.Login(TestConfig.AdminCredentials.Username, TestConfig.AdminCredentials.Password);
         
-        var adminDashboard = new AdminDashboardPage(Driver);
-        adminDashboard.WaitForPageToLoad();
+        var adminNavBar = new AdminNavBarComponent(Driver);
+        adminNavBar.WaitForPageToLoad();
         
         Logger.LogDebug("Step 4: Navigating to messages section");
-        var adminMessagesPage = adminDashboard.NavigateToMessages();
+        var adminMessagesPage = adminNavBar.NavigateToMessages();
         
         Logger.LogDebug("Step 5: Verifying message appears in messages list");
         Assert.That(adminMessagesPage.IsMessagePresent(testData.Name, testData.Subject), Is.True, 
@@ -436,9 +436,9 @@ public class HomePageContactTests : BaseTest
         adminLoginPage.WaitForPageToLoad();
         adminLoginPage.Login(TestConfig.AdminCredentials.Username, TestConfig.AdminCredentials.Password);
         
-        var adminDashboard = new AdminDashboardPage(Driver);
-        adminDashboard.WaitForPageToLoad();
-        var adminMessagesPage = adminDashboard.NavigateToMessages();
+        var adminNavBar = new AdminNavBarComponent(Driver);
+        adminNavBar.WaitForPageToLoad();
+        var adminMessagesPage = adminNavBar.NavigateToMessages();
         
         var messageFound = WaitHelper.WaitForCondition(Driver, d => adminMessagesPage.IsMessagePresent(testData.Name, testData.Subject), TimeSpan.FromSeconds(10));
         Assert.That(messageFound, Is.True, "Setup: Test message should appear in admin messages list");
