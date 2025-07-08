@@ -16,7 +16,7 @@ namespace TechnicalAssignment.Tests;
 [Parallelizable(ParallelScope.Fixtures)]
 public class AdminRoomManagementTests : AdminRoomsBaseTest
 {
-    [Test, Retry(2)]
+    [Test]
     [Description("TC020: Bulk-Delete Sanity Check")]
     public void BulkDelete_MultipleRooms_ShouldUpdateListingCorrectly()
     {
@@ -68,7 +68,7 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
         Logger.LogInformation("TC020: Bulk delete multiple rooms test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC005: Delete Room from Listing")]
     public void DeleteRoom_FromListing_ShouldRemoveRoom()
     {
@@ -93,7 +93,7 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
         Logger.LogInformation("TC005: Delete room from listing test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC010: Verify New Rooms on Public HomePage")]
     public void NewRooms_ShouldAppearOnPublicHomePage()
     {
@@ -125,7 +125,7 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
         Logger.LogInformation("TC010: Verify new rooms appear on public home page passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC018: Unauthorized Access Redirect to LoginPage")]
     public void UnauthorizedAccess_AdminRooms_ShouldRedirectToLoginPage()
     {

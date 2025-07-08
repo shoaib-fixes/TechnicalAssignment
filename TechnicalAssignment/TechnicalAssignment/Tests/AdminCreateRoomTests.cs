@@ -16,7 +16,7 @@ namespace TechnicalAssignment.Tests;
 [Parallelizable(ParallelScope.Fixtures)]
 public class AdminCreateRoomTests : AdminRoomsBaseTest
 {
-    [Test, Retry(2)]
+    [Test]
     [Description("TC001: Create Rooms for All Type and Accessibility Combinations")]
     public void CreateRoom_AllTypesAndAccessibilityCombinations_ShouldSucceed()
     {
@@ -59,7 +59,7 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC001: Create rooms for all type and accessibility combinations passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC002: Room Number Field Validation – Non-Numeric Input")]
     public void CreateRoom_NonNumericRoomNumber_ShouldFail()
     {
@@ -76,7 +76,7 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC002: Room number field validation with non-numeric input passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC003: Duplicate Room Number Rejection")]
     public void CreateRoom_DuplicateRoomNumber_ShouldFail()
     {
@@ -96,7 +96,7 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC003: Duplicate room number rejection test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC004: Price Field Validation – Non-Numeric Input")]
     public void CreateRoom_NonNumericPrice_ShouldFail()
     {
@@ -112,7 +112,7 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC004: Price field validation with non-numeric input passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC011: Required-Field Validation – Empty Inputs")]
     public void CreateRoom_WithoutMandatoryFields_ShouldFail()
     {
@@ -128,49 +128,30 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC011: Required-field validation test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
-    [Description("TC012a: Price Field Validation – Zero Price")]
-    public void CreateRoom_ZeroPrice_ShouldFail()
+    [Test]
+    [Description("TC012: Price Field Validation – Invalid Low Prices")]
+    [TestCase(0, "Zero price")]
+    [TestCase(-100, "Negative price")]
+    public void CreateRoom_InvalidLowPrice_ShouldFail(int price, string description)
     {
-        Logger.LogInformation("Starting TC012a: Zero price validation test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC012: {Description} validation test for browser: {Browser}", description, CurrentBrowser);
         
-        var roomNumber = GetExoticRoomNumber();
-        Logger.LogDebug("Attempting to create room {RoomNumber} with zero price", roomNumber);
-        _roomsPage.CreateRoom(roomNumber, "Single", false, 0, new List<string>());
+        var roomNumber = GetRandomRoomNumber();
+        Logger.LogDebug("Attempting to create room {RoomNumber} with invalid price {Price}", roomNumber, price);
+        _roomsPage.CreateRoom(roomNumber, "Single", false, price, new List<string>());
 
-        Logger.LogDebug("Verifying error message for zero price is visible");
-        Assert.That(_roomsPage.IsErrorAlertVisible(), Is.True, "Error alert should be displayed for zero price");
+        Logger.LogDebug("Verifying error message for invalid price is visible");
+        Assert.That(_roomsPage.IsErrorAlertVisible(), Is.True, "Error alert should be displayed for invalid price");
         
         var errorMessage = _roomsPage.GetErrorAlertText();
         Logger.LogDebug("Error message received: {ErrorMessage}", errorMessage);
         Assert.That(errorMessage, Does.Contain("must be greater than or equal to 1"), 
             "Error message should indicate price must be greater than 0");
 
-        Logger.LogInformation("TC012a: Zero price validation test passed successfully for browser: {Browser}", CurrentBrowser);
-    }
-
-    [Test, Retry(2)]
-    [Description("TC012b: Price Field Validation – Negative Price")]
-    public void CreateRoom_NegativePrice_ShouldFail()
-    {
-        Logger.LogInformation("Starting TC012b: Negative price validation test for browser: {Browser}", CurrentBrowser);
-
-        var roomNumber = GetExoticRoomNumber();
-        Logger.LogDebug("Attempting to create room {RoomNumber} with negative price", roomNumber);
-        _roomsPage.CreateRoom(roomNumber, "Single", false, -100, new List<string>());
-
-        Logger.LogDebug("Verifying error message for negative price is visible");
-        Assert.That(_roomsPage.IsErrorAlertVisible(), Is.True, "Error alert should be displayed for negative price");
-        
-        var errorMessage = _roomsPage.GetErrorAlertText();
-        Logger.LogDebug("Error message received: {ErrorMessage}", errorMessage);
-        Assert.That(errorMessage, Does.Contain("must be greater than or equal to 1"), 
-            "Error message should indicate price must be greater than 0");
-
-        Logger.LogInformation("TC012b: Negative price validation test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC012: {Description} validation test passed successfully for browser: {Browser}", description, CurrentBrowser);
     }
     
-    [Test, Retry(2)]
+    [Test]
     [Description("TC012c: Price Field Validation – Decimal Price")]
     public void CreateRoom_DecimalPrice_ShouldSucceed()
     {
@@ -187,14 +168,14 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         {
             Assert.That(_roomsPage.IsRoomPresent(roomNumber), Is.True, 
                 "Room should be created with decimal price");
-            Assert.That(_roomsPage.GetRoomPrice(roomNumber), Is.EqualTo((double)price),
+            Assert.That(_roomsPage.GetRoomPriceAsDecimal(roomNumber), Is.EqualTo(price),
                 "Room price should match the specified decimal value");
         });
 
         Logger.LogInformation("TC012c: Decimal price validation test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC013: No-Feature Selection")]
     public void CreateRoom_NoFeatureSelection_ShouldSucceed()
     {
@@ -212,7 +193,7 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC013: No-feature selection test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC014: Default Dropdown Values on Load")]
     public void DefaultDropdownValues_OnLoad_ShouldBeCorrect()
     {

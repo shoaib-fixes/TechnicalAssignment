@@ -63,29 +63,32 @@ public class AdminRoomsPage : BasePage
         ElementHelper.JavaScriptClick(Driver, CreateButton);
     }
 
+    private IWebElement? GetRoomRow(int roomNumber)
+    {
+        var roomNumberString = roomNumber.ToString();
+        var rows = Driver.FindElements(RoomRows);
+        return rows.FirstOrDefault(row => 
+            row.FindElement(By.CssSelector("p[id^='roomName']")).Text.Trim().Equals(roomNumberString, StringComparison.OrdinalIgnoreCase));
+    }
+
     public bool IsRoomPresent(int roomNumber, string? type = null, bool? accessible = null, int? price = null, IEnumerable<string>? features = null)
     {
-        var rows = Driver.FindElements(RoomRows);
-        foreach (var row in rows)
+        var row = GetRoomRow(roomNumber);
+        if (row == null) return false;
+
+        if (type != null && !row.FindElement(By.CssSelector("p[id^='type']")).Text.Equals(type, StringComparison.OrdinalIgnoreCase))
+            return false;
+        if (accessible.HasValue && !row.FindElement(By.CssSelector("p[id^='accessible']")).Text.Equals(accessible.Value.ToString().ToLower(), StringComparison.OrdinalIgnoreCase))
+            return false;
+        if (price.HasValue && !row.FindElement(By.CssSelector("p[id^='roomPrice']")).Text.Equals(price.Value.ToString(), StringComparison.OrdinalIgnoreCase))
+            return false;
+        if (features != null)
         {
-            var name = row.FindElement(By.CssSelector("p[id^='roomName']")).Text.Trim();
-            if (!name.Equals(roomNumber.ToString(), StringComparison.OrdinalIgnoreCase))
-                continue;
-            if (type != null && !row.FindElement(By.CssSelector("p[id^='type']")).Text.Equals(type, StringComparison.OrdinalIgnoreCase))
+            var details = row.FindElement(By.CssSelector("p[id^='details']")).Text;
+            if (!features.All(f => details.Contains(f, StringComparison.OrdinalIgnoreCase)))
                 return false;
-            if (accessible.HasValue && !row.FindElement(By.CssSelector("p[id^='accessible']")).Text.Equals(accessible.Value.ToString().ToLower(), StringComparison.OrdinalIgnoreCase))
-                return false;
-            if (price.HasValue && !row.FindElement(By.CssSelector("p[id^='roomPrice']")).Text.Equals(price.Value.ToString(), StringComparison.OrdinalIgnoreCase))
-                return false;
-            if (features != null)
-            {
-                var details = row.FindElement(By.CssSelector("p[id^='details']")).Text;
-                if (!features.All(f => details.Contains(f, StringComparison.OrdinalIgnoreCase)))
-                    return false;
-            }
-            return true;
         }
-        return false;
+        return true;
     }
 
     public (string, bool) GetDefaultDropdownValues()
@@ -101,17 +104,13 @@ public class AdminRoomsPage : BasePage
 
     public void DeleteRoom(int roomNumber)
     {
-        var rows = Driver.FindElements(RoomRows);
-        foreach (var row in rows)
+        var row = GetRoomRow(roomNumber);
+        if (row != null)
         {
-            var name = row.FindElement(By.CssSelector("p[id^='roomName']")).Text.Trim();
-            if (name.Equals(roomNumber.ToString(), StringComparison.OrdinalIgnoreCase))
-            {
-                var deleteButton = row.FindElement(By.CssSelector("span.roomDelete"));
-                ScrollHelper.ScrollToElement(Driver, By.CssSelector("span.roomDelete"), ScrollBehavior.Smooth);
-                deleteButton.Click();
-                return;
-            }
+            var deleteButton = row.FindElement(By.CssSelector("span.roomDelete"));
+            var jsExecutor = (IJavaScriptExecutor)Driver;
+            jsExecutor.ExecuteScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", deleteButton);
+            jsExecutor.ExecuteScript("arguments[0].click();", deleteButton);
         }
     }
 
@@ -145,65 +144,39 @@ public class AdminRoomsPage : BasePage
 
     public string GetRoomType(int roomNumber)
     {
-        var rows = Driver.FindElements(RoomRows);
-        foreach (var row in rows)
-        {
-            var name = row.FindElement(By.CssSelector("p[id^='roomName']")).Text.Trim();
-            if (name.Equals(roomNumber.ToString(), StringComparison.OrdinalIgnoreCase))
-            {
-                return row.FindElement(By.CssSelector("p[id^='type']")).Text.Trim();
-            }
-        }
-        return string.Empty;
+        var row = GetRoomRow(roomNumber);
+        return row?.FindElement(By.CssSelector("p[id^='type']")).Text.Trim() ?? string.Empty;
     }
 
     public bool GetRoomAccessibility(int roomNumber)
     {
-        var rows = Driver.FindElements(RoomRows);
-        foreach (var row in rows)
-        {
-            var name = row.FindElement(By.CssSelector("p[id^='roomName']")).Text.Trim();
-            if (name.Equals(roomNumber.ToString(), StringComparison.OrdinalIgnoreCase))
-            {
-                var accessibleText = row.FindElement(By.CssSelector("p[id^='accessible']")).Text.Trim();
-                return bool.Parse(accessibleText);
-            }
-        }
-        return false;
+        var row = GetRoomRow(roomNumber);
+        if (row == null) return false;
+
+        var accessibleText = row.FindElement(By.CssSelector("p[id^='accessible']")).Text.Trim();
+        return bool.TryParse(accessibleText, out var result) && result;
     }
 
     public int GetRoomPrice(int roomNumber)
     {
-        var rows = Driver.FindElements(RoomRows);
-        foreach (var row in rows)
+        var row = GetRoomRow(roomNumber);
+        if (row == null) return 0;
+        
+        var priceText = row.FindElement(By.CssSelector("p[id^='roomPrice']")).Text.Trim();
+        if (decimal.TryParse(priceText, out var decimalPrice))
         {
-            var name = row.FindElement(By.CssSelector("p[id^='roomName']")).Text.Trim();
-            if (name.Equals(roomNumber.ToString(), StringComparison.OrdinalIgnoreCase))
-            {
-                var priceText = row.FindElement(By.CssSelector("p[id^='roomPrice']")).Text.Trim();
-                if (decimal.TryParse(priceText, out var decimalPrice))
-                {
-                    return (int)decimalPrice;
-                }
-                return int.Parse(priceText);
-            }
+            return (int)decimalPrice;
         }
-        return 0;
+        return int.TryParse(priceText, out var result) ? result : 0;
     }
 
     public decimal GetRoomPriceAsDecimal(int roomNumber)
     {
-        var rows = Driver.FindElements(RoomRows);
-        foreach (var row in rows)
-        {
-            var name = row.FindElement(By.CssSelector("p[id^='roomName']")).Text.Trim();
-            if (name.Equals(roomNumber.ToString(), StringComparison.OrdinalIgnoreCase))
-            {
-                var priceText = row.FindElement(By.CssSelector("p[id^='roomPrice']")).Text.Trim();
-                return decimal.Parse(priceText);
-            }
-        }
-        return 0;
+        var row = GetRoomRow(roomNumber);
+        if (row == null) return 0;
+
+        var priceText = row.FindElement(By.CssSelector("p[id^='roomPrice']")).Text.Trim();
+        return decimal.TryParse(priceText, out var result) ? result : 0;
     }
 
     public AdminRoomPage NavigateToRoomDetails(int roomNumber)
@@ -258,21 +231,11 @@ public class AdminRoomsPage : BasePage
 
     public bool WaitForRoomToAppear(int roomNumber, TimeSpan? timeout = null)
     {
-        return WaitHelper.WaitForCondition(Driver, d => 
-        {
-            d.Navigate().Refresh();
-            WaitForPageToLoad();
-            return IsRoomPresent(roomNumber);
-        }, timeout ?? TimeSpan.FromSeconds(10));
+        return WaitHelper.WaitForCondition(Driver, d => IsRoomPresent(roomNumber), timeout ?? TimeSpan.FromSeconds(10));
     }
 
     public bool WaitForRoomToDisappear(int roomNumber, TimeSpan? timeout = null)
     {
-        return WaitHelper.WaitForCondition(Driver, d => 
-        {
-            d.Navigate().Refresh();
-            WaitForPageToLoad();
-            return !IsRoomPresent(roomNumber);
-        }, timeout ?? TimeSpan.FromSeconds(10));
+        return WaitHelper.WaitForCondition(Driver, d => !IsRoomPresent(roomNumber), timeout ?? TimeSpan.FromSeconds(10));
     }
 } 

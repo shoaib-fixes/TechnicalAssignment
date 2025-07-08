@@ -14,12 +14,6 @@ public class AdminRoomPage : BasePage
     private static readonly By TypeSelect = By.Id("type");
     private static readonly By AccessibleSelect = By.Id("accessible");
     private static readonly By PriceInput = By.Id("roomPrice");
-    private static readonly By FeaturesSafeCheckbox = By.XPath("//label[contains(text(), 'Safe')]/preceding-sibling::input");
-    private static readonly By FeaturesWifiCheckbox = By.XPath("//label[contains(text(), 'WiFi')]/preceding-sibling::input");
-    private static readonly By FeaturesTVCheckbox = By.XPath("//label[contains(text(), 'TV')]/preceding-sibling::input");
-    private static readonly By FeaturesRadioCheckbox = By.XPath("//label[contains(text(), 'Radio')]/preceding-sibling::input");
-    private static readonly By FeaturesViewsCheckbox = By.XPath("//label[contains(text(), 'Views')]/preceding-sibling::input");
-    private static readonly By FeaturesRefreshmentsCheckbox = By.XPath("//label[contains(text(), 'Refreshments')]/preceding-sibling::input");
     private static readonly By ImageUrlInput = By.Id("image");
     private static readonly By UpdateButton = By.Id("update");
     private static readonly By CancelButton = By.Id("cancelEdit");
@@ -27,6 +21,8 @@ public class AdminRoomPage : BasePage
     private static readonly By RoomImage = By.CssSelector("div.room-details img");
     private static readonly By EditButton = By.XPath("//button[normalize-space()='Edit']");
     
+    // NOTE: These selectors are based on visible text because no other stable locators (like data-testid) are available in the view mode HTML.
+    // This is a potential point of fragility if the UI text changes.
     private static readonly By DisplayedType = By.XPath("//p[starts-with(text(), 'Type:')]/span");
     private static readonly By DisplayedAccessibility = By.XPath("//p[starts-with(text(), 'Accessible:')]/span");
     private static readonly By DisplayedPrice = By.XPath("//p[starts-with(text(), 'Room price:')]/span");
@@ -44,12 +40,15 @@ public class AdminRoomPage : BasePage
 
     public override void WaitForPageToLoad(TimeSpan? timeout = null)
     {
+        WaitHelper.WaitForElement(Driver, RoomNumberInput, timeout);
+    }
+
+    public void ClickEditButton(TimeSpan? timeout = null)
+    {
         if (ElementHelper.IsElementPresent(Driver, EditButton, timeout))
         {
             ElementHelper.SafeClick(Driver, EditButton, timeout);
         }
-
-        WaitHelper.WaitForElement(Driver, RoomNumberInput, timeout);
     }
 
     public string GetRoomNumber() => Driver.FindElement(RoomNumberInput).GetAttribute("value") ?? string.Empty;
@@ -60,12 +59,19 @@ public class AdminRoomPage : BasePage
     public List<string> GetRoomFeatures()
     {
         var features = new List<string>();
-        if (Driver.FindElement(FeaturesWifiCheckbox).Selected) features.Add("WiFi");
-        if (Driver.FindElement(FeaturesTVCheckbox).Selected) features.Add("TV");
-        if (Driver.FindElement(FeaturesRadioCheckbox).Selected) features.Add("Radio");
-        if (Driver.FindElement(FeaturesRefreshmentsCheckbox).Selected) features.Add("Refreshments");
-        if (Driver.FindElement(FeaturesSafeCheckbox).Selected) features.Add("Safe");
-        if (Driver.FindElement(FeaturesViewsCheckbox).Selected) features.Add("Views");
+        var allFeatureCheckboxes = Driver.FindElements(By.CssSelector("input[type='checkbox'][name='featureCheck']"));
+    
+        foreach (var checkbox in allFeatureCheckboxes)
+        {
+            if (checkbox.Selected)
+            {
+                var featureValue = checkbox.GetAttribute("value");
+                if (!string.IsNullOrEmpty(featureValue))
+                {
+                    features.Add(featureValue);
+                }
+            }
+        }
         return features;
     }
 
@@ -81,7 +87,7 @@ public class AdminRoomPage : BasePage
         ElementHelper.SelectDropdownByValue(Driver, AccessibleSelect, accessible);
         ElementHelper.SafeSendKeys(Driver, PriceInput, price);
 
-        var allFeatureCheckboxes = Driver.FindElements(By.CssSelector("input[type='checkbox']"));
+        var allFeatureCheckboxes = Driver.FindElements(By.CssSelector("input[type='checkbox'][name='featureCheck']"));
         foreach (var checkbox in allFeatureCheckboxes)
         {
             if (checkbox.Selected)
@@ -92,7 +98,7 @@ public class AdminRoomPage : BasePage
         
         foreach (var feature in features)
         {
-            var checkbox = Driver.FindElement(By.XPath($"//label[contains(text(), '{feature}')]/preceding-sibling::input"));
+            var checkbox = Driver.FindElement(GetFeatureCheckboxLocator(feature));
             if (!checkbox.Selected)
             {
                 checkbox.Click();
@@ -125,6 +131,20 @@ public class AdminRoomPage : BasePage
     public string GetErrorAlertText()
     {
         return WaitHelper.WaitForElement(Driver, ErrorAlert).Text;
+    }
+
+    private By GetFeatureCheckboxLocator(string feature)
+    {
+        return feature.ToLower() switch
+        {
+            "wifi" => By.Id("wifiCheckbox"),
+            "tv" => By.Id("tvCheckbox"),
+            "radio" => By.Id("radioCheckbox"),
+            "refreshments" => By.Id("refreshCheckbox"),
+            "safe" => By.Id("safeCheckbox"),
+            "views" => By.Id("viewsCheckbox"),
+            _ => throw new ArgumentException($"Unsupported feature: {feature}", nameof(feature)),
+        };
     }
 
     public string GetImageUrl()

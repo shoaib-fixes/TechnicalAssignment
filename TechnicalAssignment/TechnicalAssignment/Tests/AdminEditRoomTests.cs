@@ -16,7 +16,7 @@ namespace TechnicalAssignment.Tests;
 [Parallelizable(ParallelScope.Fixtures)]
 public class AdminEditRoomTests : AdminRoomsBaseTest
 {
-    [Test, Retry(2)]
+    [Test]
     [Description("TC006: Navigate to Room Details Page")]
     public void NavigateToRoomDetails_ClickingRoomNumber_ShouldOpenDetailsPage()
     {
@@ -39,7 +39,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC006: Navigate to room details test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC007: Verify Room Details Display")]
     public void RoomDetailsDisplay_ShouldShowCorrectInformation()
     {
@@ -55,22 +55,22 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
 
         Logger.LogDebug("Navigating to details page for room {RoomNumber}", roomNumber);
         _roomPage = _roomsPage.NavigateToRoomDetails(roomNumber);
-        _roomPage.WaitForPageToLoad();
+        _roomPage.WaitForViewMode();
 
         Logger.LogDebug("Verifying room details on the page");
         Assert.Multiple(() =>
         {
-            Assert.That(_roomPage.GetRoomNumber(), Is.EqualTo(roomNumber.ToString()), "Room number should match");
-            Assert.That(_roomPage.GetRoomType(), Is.EqualTo("Double"), "Room type should match");
-            Assert.That(_roomPage.GetRoomAccessibility(), Is.EqualTo("true"), "Room accessibility should match");
-            Assert.That(_roomPage.GetRoomPrice(), Is.EqualTo(price.ToString()), "Room price should match");
-            Assert.That(_roomPage.GetRoomFeatures(), Is.EquivalentTo(features), "Room features should match");
+            Assert.That(_roomPage.GetDisplayedRoomNumber(), Is.EqualTo(roomNumber), "Room number should match");
+            Assert.That(_roomPage.GetDisplayedRoomType(), Is.EqualTo("Double"), "Room type should match");
+            Assert.That(_roomPage.GetDisplayedAccessibility(), Is.True, "Room accessibility should match");
+            Assert.That(_roomPage.GetDisplayedPrice(), Is.EqualTo(price), "Room price should match");
+            Assert.That(_roomPage.GetDisplayedFeatures(), Is.EquivalentTo(features), "Room features should match");
         });
 
         Logger.LogInformation("TC007: Verify room details display test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC008: Edit Room Fields")]
     public void EditRoom_ModifyFields_ShouldUpdateSuccessfully()
     {
@@ -85,6 +85,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogDebug("Navigating to details page for room {RoomNumber}", roomNumber);
         _roomPage = _roomsPage.NavigateToRoomDetails(roomNumber);
         _roomPage.WaitForPageToLoad();
+        _roomPage.ClickEditButton();
         
         var newPrice = 250;
         var newFeatures = new List<string> { "Safe", "Views" };
@@ -105,7 +106,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC008: Edit room fields test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC009: Cancel Edit Operation")]
     public void EditRoom_CancelOperation_ShouldLeaveDataUnchanged()
     {
@@ -120,6 +121,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogDebug("Navigating to details page for room {RoomNumber}", roomNumber);
         _roomPage = _roomsPage.NavigateToRoomDetails(roomNumber);
         _roomPage.WaitForPageToLoad();
+        _roomPage.ClickEditButton();
         
         Logger.LogDebug("Entering new data but clicking Cancel");
         _roomPage.EnterRoomDetails("Suite", "true", "500", new List<string> { "Safe" });
@@ -138,7 +140,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC009: Cancel edit operation test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC015a: Edit Room Number – Valid Update")]
     public void EditRoom_ValidRoomNumber_ShouldUpdateSuccessfully()
     {
@@ -154,6 +156,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogDebug("Navigating to details page for room {OriginalRoomNumber}", originalRoomNumber);
         _roomPage = _roomsPage.NavigateToRoomDetails(originalRoomNumber);
         _roomPage.WaitForPageToLoad();
+        _roomPage.ClickEditButton();
         
         Logger.LogDebug("Updating room number from {OriginalRoomNumber} to {NewRoomNumber}", originalRoomNumber, newRoomNumber);
         _roomPage.UpdateRoomNumber(newRoomNumber.ToString());
@@ -167,7 +170,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC015a: Valid room number update test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC015b: Edit Room Number – Duplicate Number Rejection")]
     public void EditRoom_DuplicateRoomNumber_ShouldFail()
     {
@@ -185,6 +188,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogDebug("Navigating to details page for room {RoomNumber2}", roomNumber2);
         _roomPage = _roomsPage.NavigateToRoomDetails(roomNumber2);
         _roomPage.WaitForPageToLoad();
+        _roomPage.ClickEditButton();
         
         Logger.LogDebug("Attempting to update room number from {RoomNumber2} to existing number {RoomNumber1}", roomNumber2, roomNumber1);
         _roomPage.UpdateRoomNumber(roomNumber1.ToString());
@@ -196,7 +200,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC015b: Duplicate room number edit test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC015c: Edit Room Number – Invalid Number Rejection")]
     public void EditRoom_InvalidRoomNumber_ShouldFail()
     {
@@ -210,6 +214,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogDebug("Navigating to details page for room {RoomNumber}", roomNumber);
         _roomPage = _roomsPage.NavigateToRoomDetails(roomNumber);
         _roomPage.WaitForPageToLoad();
+        _roomPage.ClickEditButton();
 
         const string invalidRoomNumber = "invalid-room";
         Logger.LogDebug("Attempting to update room number to invalid string '{InvalidRoomNumber}'", invalidRoomNumber);
@@ -223,7 +228,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC015c: Invalid room number edit test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC015d: Edit Room Number – Large Number Over 1000")]
     public void EditRoom_LargeRoomNumber_ShouldFail()
     {
@@ -237,6 +242,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogDebug("Navigating to details page for room {RoomNumber}", roomNumber);
         _roomPage = _roomsPage.NavigateToRoomDetails(roomNumber);
         _roomPage.WaitForPageToLoad();
+        _roomPage.ClickEditButton();
 
         var largeRoomNumber = GetExoticRoomNumber();
         Logger.LogDebug("Attempting to update room number to large number {LargeRoomNumber}", largeRoomNumber);
@@ -254,7 +260,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogInformation("TC015d: Large room number edit test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
-    [Test, Retry(2)]
+    [Test]
     [Description("TC016: Invalid Image URL on Edit")]
     public void EditRoom_InvalidImageUrl_ShouldFallbackOrFailProperly()
     {
@@ -268,6 +274,7 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Logger.LogDebug("Navigating to details page for room {RoomNumber}", roomNumber);
         _roomPage = _roomsPage.NavigateToRoomDetails(roomNumber);
         _roomPage.WaitForPageToLoad();
+        _roomPage.ClickEditButton();
         
         const string invalidUrl = "nonsenseURL";
         Logger.LogDebug("Updating image URL to invalid URL: {InvalidUrl}", invalidUrl);
