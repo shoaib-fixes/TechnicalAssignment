@@ -219,26 +219,90 @@ public class HomePageBookingTests : BaseTest
         Logger.LogInformation("TC008: Room card navigation test passed successfully");
     }
 
-    [Test(Description = "TC027: Verify that booking form displays correctly on different screen sizes")]
-    public void BookingForm_ResponsiveDisplay_ShouldWorkOnDifferentScreenSizes()
+    [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetMobileViewportTestCases))]
+    [Description("TC027a: Verify that booking form displays correctly on mobile viewports")]
+    public void BookingForm_ResponsiveDisplay_ShouldWorkOnMobileViewports(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting TC027: Booking form responsive display test");
+        Logger.LogInformation("Starting TC027a: Booking form responsive display test on {DeviceName} ({Width}x{Height})", 
+            deviceName, width, height);
         
-        Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
-        _homePage.WaitForPageToLoad();
-        
-        var viewportSizes = HomePage.GetAllViewportSizes();
-        
-        var results = _homePage.TestBookingFormResponsiveDisplay(viewportSizes);
-        
-        foreach (var result in results)
+        try
         {
-            Assert.That(result.Value, Is.True, 
-                $"Booking form should display correctly on {result.Key}");
+            Logger.LogDebug("Setting viewport size to {Width}x{Height} for {DeviceName}", width, height, deviceName);
+            BrowserHelper.SetViewportSize(Driver, width, height);
             
-            Logger.LogDebug("Booking form validation passed on {Name} viewport", result.Key);
+            Logger.LogDebug("Scrolling to booking section on {DeviceName}", deviceName);
+            _homePage.ScrollToBookingSection();
+            
+            Logger.LogDebug("Validating booking form elements on {DeviceName}", deviceName);
+            Assert.That(_homePage.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
+                $"Booking form should display correctly on {deviceName} ({width}x{height})");
+            
+            Logger.LogInformation("TC027a: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 
+                deviceName, width, height);
         }
+        finally
+        {
+            Logger.LogDebug("Resetting viewport size to default after {DeviceName} test", deviceName);
+            BrowserHelper.SetViewportSize(Driver, 1920, 1080);
+        }
+    }
+
+    [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetTabletViewportTestCases))]
+    [Description("TC027b: Verify that booking form displays correctly on tablet viewports")]
+    public void BookingForm_ResponsiveDisplay_ShouldWorkOnTabletViewports(int width, int height, string deviceName)
+    {
+        Logger.LogInformation("Starting TC027b: Booking form responsive display test on {DeviceName} ({Width}x{Height})", 
+            deviceName, width, height);
         
-        Logger.LogInformation("TC027: Booking form responsive display test passed successfully");
+        try
+        {
+            Logger.LogDebug("Setting viewport size to {Width}x{Height} for {DeviceName}", width, height, deviceName);
+            BrowserHelper.SetViewportSize(Driver, width, height);
+            
+            Logger.LogDebug("Scrolling to booking section on {DeviceName}", deviceName);
+            _homePage.ScrollToBookingSection();
+            
+            Logger.LogDebug("Validating booking form elements on {DeviceName}", deviceName);
+            Assert.That(_homePage.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
+                $"Booking form should display correctly on {deviceName} ({width}x{height})");
+            
+            Logger.LogInformation("TC027b: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 
+                deviceName, width, height);
+        }
+        finally
+        {
+            Logger.LogDebug("Resetting viewport size to default after {DeviceName} test", deviceName);
+            BrowserHelper.SetViewportSize(Driver, 1920, 1080);
+        }
+    }
+
+    [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetDesktopViewportTestCases))]
+    [Description("TC027c: Verify that booking form displays correctly on desktop viewports")]
+    public void BookingForm_ResponsiveDisplay_ShouldWorkOnDesktopViewports(int width, int height, string deviceName)
+    {
+        Logger.LogInformation("Starting TC027c: Booking form responsive display test on {DeviceName} ({Width}x{Height})", 
+            deviceName, width, height);
+        
+        try
+        {
+            Logger.LogDebug("Setting viewport size to {Width}x{Height} for {DeviceName}", width, height, deviceName);
+            BrowserHelper.SetViewportSize(Driver, width, height);
+            
+            Logger.LogDebug("Scrolling to booking section on {DeviceName}", deviceName);
+            _homePage.ScrollToBookingSection();
+            
+            Logger.LogDebug("Validating booking form elements on {DeviceName}", deviceName);
+            Assert.That(_homePage.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
+                $"Booking form should display correctly on {deviceName} ({width}x{height})");
+            
+            Logger.LogInformation("TC027c: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 
+                deviceName, width, height);
+        }
+        finally
+        {
+            Logger.LogDebug("Resetting viewport size to default after {DeviceName} test", deviceName);
+            BrowserHelper.SetViewportSize(Driver, 1920, 1080);
+        }
     }
 } 

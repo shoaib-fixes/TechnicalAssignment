@@ -127,7 +127,12 @@ public class HomePageBookingReservationPageTests : BaseTest
         
         Logger.LogDebug("Testing calendar Today button");
         _reservationPage.ClickCalendarNext();
-        WaitHelper.WaitForCondition(Driver, _ => true, TimeSpan.FromSeconds(1));
+        // Wait for calendar to update after clicking next
+        WaitHelper.WaitForCondition(Driver, _ => 
+        {
+            var currentMonth = _reservationPage.GetCalendarMonth();
+            return !currentMonth.Equals(initialMonth, StringComparison.OrdinalIgnoreCase);
+        }, TimeSpan.FromSeconds(3));
         
         var currentDate = DateTime.Now;
         var expectedCurrentMonth = currentDate.ToString("MMMM yyyy");

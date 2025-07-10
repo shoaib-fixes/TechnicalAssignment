@@ -172,7 +172,18 @@ public class HomePageBookingComponent
                     throw;
                 }
                 
-                WaitHelper.WaitForCondition(Driver, _ => true, TimeSpan.FromSeconds(1));
+                WaitHelper.WaitForCondition(Driver, _ => 
+                {
+                    try
+                    {
+                        var cards = Driver.FindElements(RoomCards);
+                        return cards.Count > 0;
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        return false;
+                    }
+                }, TimeSpan.FromSeconds(5));
                 WaitForRoomsToUpdate(TimeSpan.FromSeconds(10));
             }
             catch (Exception ex)
@@ -240,7 +251,18 @@ public class HomePageBookingComponent
             {
                 Logger.LogWarning("Stale element when clicking first room on attempt {Attempt}: {Message}", attempt + 1, ex.Message);
                 if (attempt == 2) throw;
-                WaitHelper.WaitForCondition(Driver, _ => true, TimeSpan.FromSeconds(1));
+                WaitHelper.WaitForCondition(Driver, _ => 
+                {
+                    try
+                    {
+                        var buttons = Driver.FindElements(RoomCardBookNowButtons);
+                        return buttons.Count > 0;
+                    }
+                    catch (StaleElementReferenceException)
+                    {
+                        return false;
+                    }
+                }, TimeSpan.FromSeconds(3));
             }
         }
     }
@@ -431,7 +453,19 @@ public class HomePageBookingComponent
         WaitHelper.WaitForCondition(Driver, _ => checkInElement.Equals(Driver.SwitchTo().ActiveElement()), TimeSpan.FromSeconds(2));
         
         checkInElement.SendKeys(Keys.Control + "a");
-        WaitHelper.WaitForCondition(Driver, _ => true, TimeSpan.FromMilliseconds(200));
+        WaitHelper.WaitForCondition(Driver, _ => 
+        {
+            try
+            {
+                var script = "return window.getSelection().toString().length > 0 || arguments[0].selectionStart !== arguments[0].selectionEnd;";
+                var result = ((IJavaScriptExecutor)Driver).ExecuteScript(script, checkInElement);
+                return result is bool boolResult && boolResult;
+            }
+            catch
+            {
+                return true;
+            }
+        }, TimeSpan.FromMilliseconds(500));
         checkInElement.SendKeys(date);
         WaitHelper.WaitForCondition(Driver, _ => !string.IsNullOrEmpty(checkInElement.GetAttribute("value")), TimeSpan.FromSeconds(2));
         
@@ -450,7 +484,20 @@ public class HomePageBookingComponent
         WaitHelper.WaitForCondition(Driver, _ => checkOutElement.Equals(Driver.SwitchTo().ActiveElement()), TimeSpan.FromSeconds(2));
         
         checkOutElement.SendKeys(Keys.Control + "a");
-        WaitHelper.WaitForCondition(Driver, _ => true, TimeSpan.FromMilliseconds(200));
+        // Wait for text selection to complete
+        WaitHelper.WaitForCondition(Driver, _ => 
+        {
+            try
+            {
+                var script = "return window.getSelection().toString().length > 0 || arguments[0].selectionStart !== arguments[0].selectionEnd;";
+                var result = ((IJavaScriptExecutor)Driver).ExecuteScript(script, checkOutElement);
+                return result is bool boolResult && boolResult;
+            }
+            catch
+            {
+                return true; // If we can't check selection, proceed anyway
+            }
+        }, TimeSpan.FromMilliseconds(500));
         checkOutElement.SendKeys(date);
         WaitHelper.WaitForCondition(Driver, _ => !string.IsNullOrEmpty(checkOutElement.GetAttribute("value")), TimeSpan.FromSeconds(2));
         
@@ -656,7 +703,7 @@ public class HomePageBookingComponent
             SetCheckOutDate(yesterday);
             ClickCheckAvailability();
             
-            WaitHelper.WaitForCondition(Driver, d => true, TimeSpan.FromSeconds(3));
+            WaitForRoomsToUpdate(TimeSpan.FromSeconds(10));
             
             var currentCheckIn = GetCheckInDate();
             var currentCheckOut = GetCheckOutDate();
@@ -724,7 +771,7 @@ public class HomePageBookingComponent
             SetCheckOutDate(tomorrow);
             ClickCheckAvailability();
             
-            WaitHelper.WaitForCondition(Driver, d => true, TimeSpan.FromSeconds(3));
+            WaitForRoomsToUpdate(TimeSpan.FromSeconds(10));
             
             var currentCheckIn = GetCheckInDate();
             var currentCheckOut = GetCheckOutDate();
@@ -785,7 +832,7 @@ public class HomePageBookingComponent
             SetCheckOutDate(today);
             ClickCheckAvailability();
             
-            WaitHelper.WaitForCondition(Driver, d => true, TimeSpan.FromSeconds(3));
+            WaitForRoomsToUpdate(TimeSpan.FromSeconds(10));
             
             var currentCheckIn = GetCheckInDate();
             var currentCheckOut = GetCheckOutDate();
@@ -902,7 +949,7 @@ public class HomePageBookingComponent
             if (!currentUrl.Contains(baseUrl.Replace("http://", "").Replace("https://", "")))
             {
                 Driver.Navigate().GoToUrl(baseUrl);
-                WaitHelper.WaitForCondition(Driver, _ => true, TimeSpan.FromSeconds(3));
+                WaitForPageToLoad(TimeSpan.FromSeconds(10));
             }
             return true;
         }
@@ -913,30 +960,32 @@ public class HomePageBookingComponent
         }
     }
 
-    public Dictionary<string, bool> TestBookingFormResponsiveDisplay(ViewportSize[] viewportSizes)
+    public bool TestBookingFormResponsiveDisplay(int width, int height, string deviceName)
     {
-        var results = new Dictionary<string, bool>();
-        var originalSize = BrowserHelper.GetViewportSize(Driver);
+        Logger.LogDebug("Testing booking form responsive display on {DeviceName} ({Width}x{Height})", deviceName, width, height);
         
-        try
+        BrowserHelper.SetViewportSize(Driver, width, height);
+        
+        // Simple wait for viewport to stabilize - just wait for a moment rather than complex condition
+        WaitHelper.WaitForCondition(Driver, _ => 
         {
-            foreach (var viewport in viewportSizes)
+            // Just check that we can interact with the page elements
+            try
             {
-                BrowserHelper.SetViewportSize(Driver, viewport.Width, viewport.Height);
-                WaitHelper.WaitForCondition(Driver, _ => true, TimeSpan.FromSeconds(2));
-                
-                ScrollToBookingSection();
-                var isValid = ValidateBookingFormElements();
-                
-                results[viewport.Name] = isValid;
+                var elements = Driver.FindElements(BookingFormSection);
+                return elements.Count > 0;
             }
-        }
-        finally
-        {
-            BrowserHelper.SetViewportSize(Driver, originalSize.Width, originalSize.Height);
-        }
+            catch
+            {
+                return false;
+            }
+        }, TimeSpan.FromSeconds(5));
         
-        return results;
+        ScrollToBookingSection();
+        var isValid = ValidateBookingFormElements();
+        
+        Logger.LogDebug("Booking form validation result on {DeviceName}: {IsValid}", deviceName, isValid);
+        return isValid;
     }
 }
 

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using TechnicalAssignment.Utilities;
@@ -674,8 +674,8 @@ public class ReservationPage : BasePage
         Logger.LogDebug("Extracting check-in date from URL: {Url}", url);
         
         var uri = new Uri(url);
-        var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
-        var checkInParam = queryParams["checkin"];
+        var queryParams = QueryHelpers.ParseQuery(uri.Query);
+        var checkInParam = queryParams.TryGetValue("checkin", out var checkinValues) ? checkinValues.FirstOrDefault() : null;
         
         Logger.LogDebug("Check-in parameter from URL: {CheckIn}", checkInParam);
         return checkInParam ?? string.Empty;
@@ -687,8 +687,8 @@ public class ReservationPage : BasePage
         Logger.LogDebug("Extracting check-out date from URL: {Url}", url);
         
         var uri = new Uri(url);
-        var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
-        var checkOutParam = queryParams["checkout"];
+        var queryParams = QueryHelpers.ParseQuery(uri.Query);
+        var checkOutParam = queryParams.TryGetValue("checkout", out var checkoutValues) ? checkoutValues.FirstOrDefault() : null;
         
         Logger.LogDebug("Check-out parameter from URL: {CheckOut}", checkOutParam);
         return checkOutParam ?? string.Empty;
@@ -704,13 +704,13 @@ public class ReservationPage : BasePage
         try
         {
             var uri = new Uri(url);
-            var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+            var queryParams = QueryHelpers.ParseQuery(uri.Query);
             
-            foreach (string key in queryParams.Keys)
+            foreach (var kvp in queryParams)
             {
-                if (key != null)
+                if (!string.IsNullOrEmpty(kvp.Key))
                 {
-                    parameters[key] = queryParams[key] ?? string.Empty;
+                    parameters[kvp.Key] = kvp.Value.FirstOrDefault() ?? string.Empty;
                 }
             }
             

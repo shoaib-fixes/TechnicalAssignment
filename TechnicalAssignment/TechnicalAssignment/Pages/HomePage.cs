@@ -162,9 +162,9 @@ public class HomePage : BasePage
         return Booking.ValidateSameDayBookingHandling();
     }
 
-    public System.Collections.Generic.Dictionary<string, bool> TestBookingFormResponsiveDisplay(ViewportSize[] viewportSizes)
+    public bool TestBookingFormResponsiveDisplay(int width, int height, string deviceName)
     {
-        return Booking.TestBookingFormResponsiveDisplay(viewportSizes);
+        return Booking.TestBookingFormResponsiveDisplay(width, height, deviceName);
     }
 
     public IWebElement GetBookingFormElement()
