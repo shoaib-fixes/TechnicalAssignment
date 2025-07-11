@@ -10,7 +10,7 @@ namespace TechnicalAssignment.Pages;
 public class ReservationPageGuestFormComponent
 {
     protected readonly IWebDriver Driver;
-    protected readonly ILogger Logger;
+    protected readonly ILogger<ReservationPageGuestFormComponent> Logger;
     
     private static readonly By FirstNameInput = By.CssSelector(".room-firstname");
     private static readonly By LastNameInput = By.CssSelector(".room-lastname");
@@ -20,8 +20,9 @@ public class ReservationPageGuestFormComponent
     private static readonly By CancelButton = By.XPath("//button[text()='Cancel']");
     private static readonly By ValidationErrors = By.CssSelector(".alert.alert-danger");
     private static readonly By ValidationErrorList = By.CssSelector(".alert.alert-danger ul li");
+    private static readonly By BookingConfirmation = By.CssSelector(".booking-confirmation-modal");
 
-    public ReservationPageGuestFormComponent(IWebDriver driver, ILogger logger)
+    public ReservationPageGuestFormComponent(IWebDriver driver, ILogger<ReservationPageGuestFormComponent> logger)
     {
         Driver = driver;
         Logger = logger;

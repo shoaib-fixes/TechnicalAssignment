@@ -11,14 +11,14 @@ namespace TechnicalAssignment.Pages;
 public class HomePageQuickLinksComponent
 {
     protected readonly IWebDriver Driver;
-    protected readonly ILogger Logger;
+    protected readonly ILogger<HomePageQuickLinksComponent> Logger;
     
     private static readonly By QuickLinksSection = By.XPath("//h5[text()='Quick Links']/parent::div");
     private static readonly By QuickLinksHeader = By.XPath("//h5[text()='Quick Links']");
     private static readonly By QuickLinksList = By.XPath("//h5[text()='Quick Links']/following-sibling::ul");
     private static readonly By AllQuickLinks = By.XPath("//h5[text()='Quick Links']/following-sibling::ul//a");
 
-    public HomePageQuickLinksComponent(IWebDriver driver, ILogger logger)
+    public HomePageQuickLinksComponent(IWebDriver driver, ILogger<HomePageQuickLinksComponent> logger)
     {
         Driver = driver;
         Logger = logger;

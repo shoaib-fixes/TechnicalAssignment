@@ -24,9 +24,9 @@ public class HomePageBookingGuestFormTests : BaseTest
     {
         Logger.LogInformation("Setting up HomePageBookingGuestFormTests");
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
-        _homePage = new HomePage(Driver);
+        _homePage = GetService<HomePage>();
         _homePage.WaitForPageToLoad();
-        _reservationPage = new ReservationPage(Driver);
+        _reservationPage = GetService<ReservationPage>();
     }
     
     [Test(Description = "TC014: Verify that submitting empty form shows appropriate validation errors")]
@@ -34,7 +34,12 @@ public class HomePageBookingGuestFormTests : BaseTest
     {
         Logger.LogInformation("Starting TC014: Empty form validation test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
+        _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True,
+            "Rooms should be available for the selected dates");
+        
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         _reservationPage.NavigateToGuestForm();
@@ -64,7 +69,12 @@ public class HomePageBookingGuestFormTests : BaseTest
     {
         Logger.LogInformation("Starting TC015: {FieldName} validation test", fieldName);
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
+        _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True,
+            "Rooms should be available for the selected dates");
+        
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         _reservationPage.NavigateToGuestForm();
@@ -93,7 +103,12 @@ public class HomePageBookingGuestFormTests : BaseTest
     {
         Logger.LogInformation("Starting TC015b: {FieldName} boundary validation test", fieldName);
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
+        _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True,
+            "Rooms should be available for the selected dates");
+
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         _reservationPage.NavigateToGuestForm();
@@ -121,7 +136,12 @@ public class HomePageBookingGuestFormTests : BaseTest
     {
         Logger.LogInformation("Starting TC016: End-to-end booking workflow test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
+        _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True,
+            "Rooms should be available for the selected dates");
+
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         _reservationPage.NavigateToGuestForm();
@@ -142,31 +162,17 @@ public class HomePageBookingGuestFormTests : BaseTest
         Logger.LogInformation("TC016: End-to-end booking workflow test passed successfully");
     }
 
-    [Test(Description = "TC017: Verify complete end-to-end booking workflow functions correctly")]
-    public void BookingWorkflow_EndToEnd_ShouldCompleteSuccessfully()
-    {
-        Logger.LogInformation("Starting TC017: End-to-end booking workflow test");
-        
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, "Should successfully navigate to reservation page");
-        _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
-
-        var guestInfo = BookingTestData.GenerateRandomGuest();
-        
-        Assert.That(_reservationPage.CompleteBookingWorkflow(guestInfo.FirstName, guestInfo.LastName, guestInfo.Email, guestInfo.Phone), Is.True, 
-            "Should successfully complete booking workflow");
-        
-        Assert.That(_reservationPage.IsBookingConfirmed(), Is.True, 
-            "Booking should be confirmed after successful workflow");
-        
-        Logger.LogInformation("TC017: End-to-end booking workflow test passed successfully");
-    }
-
     [Test(Description = "TC018: Verify that Cancel button returns to previous state")]
     public void GuestForm_CancelButton_ShouldReturnToPreviousState()
     {
         Logger.LogInformation("Starting TC018: Cancel button functionality test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
+        _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True,
+            "Rooms should be available for the selected dates");
+
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         _reservationPage.NavigateToGuestForm();
@@ -196,27 +202,27 @@ public class HomePageBookingGuestFormTests : BaseTest
         
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
         _homePage.WaitForPageToLoad(TimeSpan.FromSeconds(10));
-        _homePage.ScrollToBookingSection();
+        _homePage.BookingForm.ScrollToBookingSection();
         
-        var testDates = BookingTestData.GenerateRandomBookingDates(1, 30, 1);
+        var testDates = DateHelper.GenerateRandomTestDates(1, 30, 1);
         
         Logger.LogDebug("Using test dates: Check-in {CheckIn}, Check-out {CheckOut}", testDates.CheckIn, testDates.CheckOut);
         
-        _homePage.CheckAvailability(testDates.CheckIn, testDates.CheckOut);
+        _homePage.BookingForm.CheckAvailability(testDates.CheckIn, testDates.CheckOut);
         
         var checkInDate = DateTime.ParseExact(testDates.CheckIn, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
         var checkOutDate = DateTime.ParseExact(testDates.CheckOut, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
-        Assert.That(_homePage.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
             "Rooms should be available for the selected dates");
         
-        var availableRoomsBefore = _homePage.GetAvailableRoomTypesWithRetry("before booking");
+        var availableRoomsBefore = _homePage.RoomList.GetAvailableRoomTypesWithRetry("before booking");
         
         Assert.That(availableRoomsBefore.Count, Is.GreaterThan(0), "Should have available rooms before booking");
         
         var roomTypeToBook = availableRoomsBefore[0];
         Logger.LogDebug("Booking room type: {RoomType}", roomTypeToBook);
         
-        _homePage.ClickRoomByType(roomTypeToBook);
+        _homePage.RoomList.ClickRoomByType(roomTypeToBook);
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(10));
         
         var bookedRoomTitle = _reservationPage.GetRoomTitle();
@@ -242,24 +248,24 @@ public class HomePageBookingGuestFormTests : BaseTest
         
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
         _homePage.WaitForPageToLoad(TimeSpan.FromSeconds(10));
-        _homePage.ScrollToBookingSection();
+        _homePage.BookingForm.ScrollToBookingSection();
         
-        _homePage.SetCheckInDate(testDates.CheckIn);
-        _homePage.SetCheckOutDate(testDates.CheckOut);
-        _homePage.ClickCheckAvailability();
+        _homePage.BookingForm.SetCheckInDate(testDates.CheckIn);
+        _homePage.BookingForm.SetCheckOutDate(testDates.CheckOut);
+        _homePage.BookingForm.ClickCheckAvailability();
 
         try
         {
-            _homePage.WaitForRoomsToUpdate(TimeSpan.FromSeconds(10));
+            _homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(10));
         }
         catch (System.TimeoutException)
         {
             Logger.LogDebug("No rooms available after booking - this is expected behavior");
         }
         
-        var availableRoomsAfter = _homePage.GetAvailableRoomTypesWithRetry("after booking");
+        var availableRoomsAfter = _homePage.RoomList.GetAvailableRoomTypesWithRetry("after booking");
         
-        var specificRoomStillAvailable = _homePage.FindRoomCard(bookedRoomTitle, bookedRoomPrice, bookedRoomFeatures);
+        var specificRoomStillAvailable = _homePage.RoomList.FindRoomCard(bookedRoomTitle, bookedRoomPrice, bookedRoomFeatures);
         
         if (specificRoomStillAvailable == null)
         {
@@ -300,26 +306,26 @@ public class HomePageBookingGuestFormTests : BaseTest
         
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
         _homePage.WaitForPageToLoad(TimeSpan.FromSeconds(10));
-        _homePage.ScrollToBookingSection();
+        _homePage.BookingForm.ScrollToBookingSection();
         
-        var testDates = BookingTestData.GenerateRandomBookingDates(1, 30, 1);
+        var testDates = DateHelper.GenerateRandomTestDates(1, 30, 1);
         
         Logger.LogDebug("Using test dates: Check-in {CheckIn}, Check-out {CheckOut}", testDates.CheckIn, testDates.CheckOut);
         
-        _homePage.CheckAvailability(testDates.CheckIn, testDates.CheckOut);
+        _homePage.BookingForm.CheckAvailability(testDates.CheckIn, testDates.CheckOut);
         
         checkInDate = DateTime.ParseExact(testDates.CheckIn, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
         checkOutDate = DateTime.ParseExact(testDates.CheckOut, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture).ToString("yyyy-MM-dd");
-        Assert.That(_homePage.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
             "Rooms should be available for the selected dates");
         
-        var availableRooms = _homePage.GetAvailableRoomTypesWithRetry("for forced double booking");
+        var availableRooms = _homePage.RoomList.GetAvailableRoomTypesWithRetry("for forced double booking");
         Assert.That(availableRooms.Count, Is.GreaterThan(0), "Should have available rooms for booking");
         
         var roomTypeToBook = availableRooms[0];
         Logger.LogDebug("Booking room type: {RoomType}", roomTypeToBook);
         
-        _homePage.ClickRoomByType(roomTypeToBook);
+        _homePage.RoomList.ClickRoomByType(roomTypeToBook);
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(10));
         
         bookingUrl = Driver.Url;
@@ -397,7 +403,12 @@ public class HomePageBookingGuestFormTests : BaseTest
     {
         Logger.LogInformation("Starting TC021: Return Home button functionality test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
+        _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True,
+            "Rooms should be available for the selected dates");
+
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         

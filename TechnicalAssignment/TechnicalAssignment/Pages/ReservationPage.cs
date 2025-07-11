@@ -35,11 +35,16 @@ public class ReservationPage : BasePage
     public ReservationPageGuestFormComponent GuestForm { get; }
     public ReservationPageCalendarComponent Calendar { get; }
 
-    public ReservationPage(IWebDriver driver) : base(driver)
+    public ReservationPage(
+        IWebDriver driver, 
+        ILogger<ReservationPage> logger,
+        ReservationPagePriceSummaryComponent priceSummary,
+        ReservationPageGuestFormComponent guestForm,
+        ReservationPageCalendarComponent calendar) : base(driver, logger)
     {
-        PriceSummary = new ReservationPagePriceSummaryComponent(driver, Logger);
-        GuestForm = new ReservationPageGuestFormComponent(driver, Logger);
-        Calendar = new ReservationPageCalendarComponent(driver, Logger);
+        PriceSummary = priceSummary;
+        GuestForm = guestForm;
+        Calendar = calendar;
     }
 
     public override bool IsPageLoaded(TimeSpan? timeout = null)

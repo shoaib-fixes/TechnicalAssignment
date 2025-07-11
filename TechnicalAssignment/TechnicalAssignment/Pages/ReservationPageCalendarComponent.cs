@@ -8,7 +8,7 @@ namespace TechnicalAssignment.Pages;
 public class ReservationPageCalendarComponent
 {
     protected readonly IWebDriver Driver;
-    protected readonly ILogger Logger;
+    protected readonly ILogger<ReservationPageCalendarComponent> Logger;
     
     private static readonly By CalendarContainer = By.CssSelector(".rbc-calendar");
     private static readonly By CalendarNextButton = By.XPath("//div[@class='rbc-toolbar']//button[text()='Next']");
@@ -16,7 +16,7 @@ public class ReservationPageCalendarComponent
     private static readonly By CalendarTodayButton = By.XPath("//div[@class='rbc-toolbar']//button[text()='Today']");
     private static readonly By CalendarToolbarLabel = By.CssSelector(".rbc-toolbar-label");
 
-    public ReservationPageCalendarComponent(IWebDriver driver, ILogger logger)
+    public ReservationPageCalendarComponent(IWebDriver driver, ILogger<ReservationPageCalendarComponent> logger)
     {
         Driver = driver;
         Logger = logger;

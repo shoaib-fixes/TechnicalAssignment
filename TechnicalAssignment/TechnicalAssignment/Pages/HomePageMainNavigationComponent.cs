@@ -8,7 +8,7 @@ namespace TechnicalAssignment.Pages;
 public class HomePageMainNavigationComponent
 {
     protected readonly IWebDriver Driver;
-    protected readonly ILogger Logger;
+    protected readonly ILogger<HomePageMainNavigationComponent> Logger;
     
     private static readonly By NavbarContainer = By.CssSelector(".container");
     private static readonly By BrandLink = By.CssSelector(".navbar-brand");
@@ -27,7 +27,7 @@ public class HomePageMainNavigationComponent
     private static readonly By LocationSection = By.Id("location");
     private static readonly By ContactSection = By.Id("contact");
 
-    public HomePageMainNavigationComponent(IWebDriver driver, ILogger logger)
+    public HomePageMainNavigationComponent(IWebDriver driver, ILogger<HomePageMainNavigationComponent> logger)
     {
         Driver = driver;
         Logger = logger;

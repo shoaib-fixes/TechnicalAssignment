@@ -19,7 +19,7 @@ public class SmokeTests : BaseTest
     {
         Logger.LogInformation("Navigating to base URL for smoke test.");
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
-        _homePage = new HomePage(Driver);
+        _homePage = GetService<HomePage>();
         _homePage.WaitForPageToLoad();
     }
 

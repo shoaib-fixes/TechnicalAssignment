@@ -13,17 +13,24 @@ namespace TechnicalAssignment.Pages;
 
 public abstract class BasePage
 {
-    protected IWebDriver Driver { get; }
-    
-    protected ILogger Logger { get; }
-    
+    protected readonly IWebDriver Driver;
+    protected readonly ILogger Logger;
+
+    protected BasePage(IWebDriver driver, ILogger logger)
+    {
+        Driver = driver;
+        Logger = logger;
+    }
+
     protected BasePage(IWebDriver driver)
     {
-        Driver = driver ?? throw new ArgumentNullException(nameof(driver));
-        Logger = LoggingHelper.CreateLogger(GetType().Name);
-        
-        Logger.LogDebug("Initializing page object: {PageName}", GetType().Name);
+        Driver = driver;
+        // This is a fallback for pages that don't get a specific logger.
+        // It's better to provide one, but this prevents crashes.
+        var loggerFactory = new LoggerFactory();
+        Logger = loggerFactory.CreateLogger(GetType());
     }
+
 
     public abstract bool IsPageLoaded(TimeSpan? timeout = null);
 

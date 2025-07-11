@@ -111,17 +111,17 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
 
         Logger.LogDebug("Navigating to public home page");
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
-        var homePage = new HomePage(Driver);
+        var homePage = GetService<HomePage>();
         homePage.WaitForPageToLoad();
         homePage.ScrollToRoomsSection();
         
         Logger.LogDebug("Searching for newly created room on home page");
-        var roomCard = homePage.Booking.FindRoomCard(roomType, (int)price, features);
+        var roomCard = homePage.RoomList.FindRoomCard(roomType, (int)price, features);
         
         Assert.That(roomCard, Is.Not.Null, $"Room with type {roomType} and price {price} should be found on the public page");
         
         Logger.LogDebug("Verifying room card details on home page");
-        Assert.That(homePage.Booking.VerifyRoomCardDetails(roomCard!, roomType, (int)price), Is.True, 
+        Assert.That(homePage.RoomList.VerifyRoomCardDetails(roomCard!, roomType, (int)price), Is.True, 
             "Room card details on public page should match created room");
 
         Logger.LogInformation("TC010: Verify new rooms appear on public home page passed successfully for browser: {Browser}", CurrentBrowser);
@@ -140,7 +140,7 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
         Driver.Navigate().GoToUrl($"{TestConfig.BaseUrl}/admin/rooms");
         
         Logger.LogDebug("Verifying redirection to login page");
-        var loginPage = new AdminLoginPage(Driver);
+        var loginPage = GetService<AdminLoginPage>();
         loginPage.WaitForPageToLoad();
         Assert.That(loginPage.IsOnLoginPage(), Is.True, 
             "Should be redirected to login page when accessing admin rooms without authorization");

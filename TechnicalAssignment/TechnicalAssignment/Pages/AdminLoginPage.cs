@@ -13,7 +13,7 @@ public class AdminLoginPage : BasePage
     private static readonly By LoginForm = By.CssSelector(".card");
     private static readonly By MessagesLink = By.CssSelector("a[href='/admin/message']");
 
-    public AdminLoginPage(IWebDriver driver) : base(driver)
+    public AdminLoginPage(IWebDriver driver, ILogger<AdminLoginPage> logger) : base(driver, logger)
     {
     }
 
@@ -33,7 +33,7 @@ public class AdminLoginPage : BasePage
         WaitHelper.WaitForElement(Driver, LoginButton, timeout);
     }
 
-    public AdminNavBarComponent Login(string username, string password)
+    public void Login(string username, string password)
     {
         ElementHelper.SafeSendKeys(Driver, UsernameField, username);
         ElementHelper.SafeSendKeys(Driver, PasswordField, password);
@@ -42,11 +42,6 @@ public class AdminLoginPage : BasePage
         ElementHelper.SafeClick(Driver, LoginButton);
 
         Logger.LogDebug("Login submitted. Waiting for dashboard to load.");
-        
-        var navBar = new AdminNavBarComponent(Driver);
-        navBar.WaitForPageToLoad();
-        
-        return navBar;
     }
 
     public bool IsOnLoginPage(TimeSpan? timeout = null)

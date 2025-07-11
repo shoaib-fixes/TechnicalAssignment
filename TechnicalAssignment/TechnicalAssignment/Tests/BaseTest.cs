@@ -4,6 +4,7 @@ using TechnicalAssignment.Drivers;
 using TechnicalAssignment.Utilities;
 using TechnicalAssignment.Configuration;
 using TechnicalAssignment.Models;
+using TechnicalAssignment.Pages;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -15,6 +16,7 @@ namespace TechnicalAssignment.Tests;
 public abstract class BaseTest
 {
     private IServiceProvider _serviceProvider = null!;
+    private IServiceScope _scope = null!;
     
     protected IWebDriver Driver { get; private set; } = null!;
     protected TestConfiguration TestConfig { get; private set; } = null!;
@@ -29,23 +31,43 @@ public abstract class BaseTest
 
         services.AddLogging(builder =>
         {
-            // You can customize logging here, e.g., add console, debug, or file logging
             builder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
             builder.AddConsole();
         });
 
-        services.AddSingleton(provider =>
-        {
-            var logger = provider.GetRequiredService<ILogger<ConfigurationManager>>();
-            return new ConfigurationManager(logger);
-        });
+        services.AddSingleton<ConfigurationManager>();
         
         services.AddSingleton(provider => provider.GetRequiredService<ConfigurationManager>().TestConfig);
         
         services.AddTransient<WebDriverFactory>();
 
+        // Register page components
+        services.AddTransient<HomePageMainNavigationComponent>();
+        services.AddTransient<HomePageNavigationComponent>();
+        services.AddTransient<HomePageQuickLinksComponent>();
+        services.AddTransient<HomePageContactComponent>();
+        services.AddTransient<HomePageBookingFormComponent>();
+        services.AddTransient<HomePageBookingRoomListComponent>();
+        services.AddTransient<HomePageBookingDateValidationComponent>();
+        
+        // Register reservation page components
+        services.AddTransient<ReservationPagePriceSummaryComponent>();
+        services.AddTransient<ReservationPageGuestFormComponent>();
+        services.AddTransient<ReservationPageCalendarComponent>();
+
+        // Register admin page components
+        services.AddTransient<AdminNavBarComponent>();
+        
+        // Register pages
+        services.AddTransient<HomePage>();
+        services.AddTransient<ReservationPage>();
+        services.AddTransient<AdminLoginPage>();
+        services.AddTransient<AdminRoomPage>();
+        services.AddTransient<AdminRoomsPage>();
+        services.AddTransient<AdminMessagesPage>();
+
         // For each test, a new driver will be created. The scope is managed by NUnit.
-        services.AddTransient<IWebDriver>(provider =>
+        services.AddScoped<IWebDriver>(provider =>
         {
             var factory = provider.GetRequiredService<WebDriverFactory>();
             var config = provider.GetRequiredService<TestConfiguration>();
@@ -62,10 +84,16 @@ public abstract class BaseTest
     [SetUp]
     public void SetUp()
     {
-        Driver = _serviceProvider.GetRequiredService<IWebDriver>();
-        TestConfig = _serviceProvider.GetRequiredService<TestConfiguration>();
-        Logger = _serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
+        _scope = _serviceProvider.CreateScope();
+        Driver = _scope.ServiceProvider.GetRequiredService<IWebDriver>();
+        TestConfig = _scope.ServiceProvider.GetRequiredService<TestConfiguration>();
+        Logger = _scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
         Logger.LogInformation("Starting test: {TestName}", TestContext.CurrentContext.Test.Name);
+    }
+
+    protected T GetService<T>() where T : notnull
+    {
+        return _scope.ServiceProvider.GetRequiredService<T>();
     }
 
     [TearDown]
@@ -89,7 +117,8 @@ public abstract class BaseTest
         finally
         {
             Driver?.Quit();
-            Logger.LogInformation("Driver quit and disposed.");
+            _scope?.Dispose();
+            Logger.LogInformation("Driver quit and scope disposed.");
         }
     }
 } 

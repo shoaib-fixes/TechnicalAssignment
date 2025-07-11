@@ -118,8 +118,12 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         
         var roomNumber = GetRandomRoomNumber();
         var initialPrice = 100;
+        var initialType = "Single";
+        var initialAccessibility = false;
+        var initialFeatures = new List<string> { "WiFi" };
+
         Logger.LogDebug("Creating room {RoomNumber} for cancel edit test", roomNumber);
-        _roomsPage.CreateRoom(roomNumber, "Single", false, initialPrice, new List<string> { "WiFi" });
+        _roomsPage.CreateRoom(roomNumber, initialType, initialAccessibility, initialPrice, initialFeatures);
         TrackRoomForCleanup(roomNumber);
         _roomsPage.WaitForRoomToAppear(roomNumber);
 
@@ -132,14 +136,15 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         _roomPage.EnterRoomDetails("Suite", "true", "500", new List<string> { "Safe" });
         _roomPage.ClickCancel();
         
-        Driver.Navigate().GoToUrl($"{TestConfig.BaseUrl}/admin/rooms");
-        _roomsPage.WaitForPageToLoad();
+        _roomPage.WaitForViewMode();
 
         Logger.LogDebug("Verifying room details remain unchanged on the listing page");
         Assert.Multiple(() =>
         {
-            Assert.That(_roomsPage.GetRoomType(roomNumber), Is.EqualTo("Single"), "Room type should not change");
-            Assert.That(_roomsPage.GetRoomPrice(roomNumber), Is.EqualTo(initialPrice), "Room price should not change");
+            Assert.That(_roomPage.GetDisplayedRoomType(), Is.EqualTo(initialType), "Room type should not change");
+            Assert.That(_roomPage.GetDisplayedAccessibility(), Is.EqualTo(initialAccessibility), "Room accessibility should not change");
+            Assert.That(_roomPage.GetDisplayedPrice(), Is.EqualTo(initialPrice), "Room price should not change");
+            Assert.That(_roomPage.GetDisplayedFeatures(), Is.EquivalentTo(initialFeatures), "Room features should not change");
         });
 
         Logger.LogInformation("TC009: Cancel edit operation test passed successfully for browser: {Browser}", CurrentBrowser);

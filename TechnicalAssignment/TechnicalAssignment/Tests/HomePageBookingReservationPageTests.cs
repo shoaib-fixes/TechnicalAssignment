@@ -23,9 +23,9 @@ public class HomePageBookingReservationPageTests : BaseTest
     {
         Logger.LogInformation("Setting up HomePageBookingReservationPageTests");
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
-        _homePage = new HomePage(Driver);
+        _homePage = GetService<HomePage>();
         _homePage.WaitForPageToLoad();
-        _reservationPage = new ReservationPage(Driver);
+        _reservationPage = GetService<ReservationPage>();
     }
 
     [Test(Description = "TC009: Verify that room details are correctly displayed on the reservation page")]
@@ -33,7 +33,7 @@ public class HomePageBookingReservationPageTests : BaseTest
     {
         Logger.LogInformation("Starting TC009: Reservation page room details test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         
@@ -63,8 +63,13 @@ public class HomePageBookingReservationPageTests : BaseTest
     {
         Logger.LogInformation("Starting TC010: {RoomType} room guest count validation test", roomInfo.RoomType);
         
-        if (!_homePage.EnsureOnHomePageForBooking(TestConfig.BaseUrl) || 
-            !_homePage.NavigateToReservationPageForRoomType(roomInfo.RoomType))
+        if (Driver.Url != TestConfig.BaseUrl)
+        {
+            Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
+            _homePage.WaitForPageToLoad();
+        }
+        
+        if (!_homePage.RoomList.NavigateToReservationPageForRoomType(roomInfo.RoomType))
         {
             Assert.Ignore($"{roomInfo.RoomType} room type is not available for booking - skipping test");
             return;
@@ -88,7 +93,7 @@ public class HomePageBookingReservationPageTests : BaseTest
     {
         Logger.LogInformation("Starting TC011: Calendar buttons functionality test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         
@@ -160,7 +165,7 @@ public class HomePageBookingReservationPageTests : BaseTest
     {
         Logger.LogInformation("Starting TC012: Price summary calculation test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         
@@ -231,7 +236,7 @@ public class HomePageBookingReservationPageTests : BaseTest
     {
         Logger.LogInformation("Starting TC013: Reserve Now button functionality test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         
@@ -253,7 +258,7 @@ public class HomePageBookingReservationPageTests : BaseTest
     {
         Logger.LogInformation("Starting TC022: Accessible badge display test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         
@@ -281,7 +286,7 @@ public class HomePageBookingReservationPageTests : BaseTest
     {
         Logger.LogInformation("Starting TC023: Similar rooms section display test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         
@@ -312,7 +317,7 @@ public class HomePageBookingReservationPageTests : BaseTest
     {
         Logger.LogInformation("Starting TC024: Room features display test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         
@@ -338,7 +343,7 @@ public class HomePageBookingReservationPageTests : BaseTest
     {
         Logger.LogInformation("Starting TC025: Room image loading test");
         
-        Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
+        Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         
@@ -365,17 +370,18 @@ public class HomePageBookingReservationPageTests : BaseTest
     {
         Logger.LogInformation("Starting TC026: URL parameter handling test");
         
-        _homePage.ScrollToBookingSection();
-        var testDates = BookingTestData.GenerateRandomBookingDates(2, 30, 1);
+        _homePage.BookingForm.ScrollToBookingSection();
         
-        Logger.LogDebug("Using test dates - CheckIn: {CheckIn}, CheckOut: {CheckOut}", testDates.CheckIn, testDates.CheckOut);
+        var testDates = BookingTestData.GenerateRandomBookingDates(1, 30, 1);
         
-        _homePage.CheckAvailability(testDates.CheckIn, testDates.CheckOut);
+        Logger.LogDebug("Using test dates: Check-in {CheckIn}, Check-out {CheckOut}", testDates.CheckIn, testDates.CheckOut);
         
-        Assert.That(_homePage.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
-            "Rooms should be available for booking");
+        _homePage.BookingForm.CheckAvailability(testDates.CheckIn, testDates.CheckOut);
         
-        _homePage.ClickFirstAvailableRoom();
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
+            "Rooms should be available for the selected dates");
+        
+        _homePage.RoomList.ClickFirstAvailableRoom();
         _reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         
         Logger.LogDebug("Verifying URL contains reservation parameters");

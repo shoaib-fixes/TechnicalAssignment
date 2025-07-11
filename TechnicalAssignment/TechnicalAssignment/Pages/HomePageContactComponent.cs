@@ -10,7 +10,7 @@ namespace TechnicalAssignment.Pages;
 public class HomePageContactComponent
 {
     protected readonly IWebDriver Driver;
-    protected readonly ILogger Logger;
+    protected readonly ILogger<HomePageContactComponent> Logger;
     
     private static readonly By ContactSection = By.Id("contact");
     private static readonly By ContactForm = By.CssSelector("#contact form");
@@ -23,7 +23,7 @@ public class HomePageContactComponent
     private static readonly By ValidationErrors = By.CssSelector(".alert.alert-danger");
     private static readonly By SuccessMessage = By.CssSelector("#contact .card .card-body h3");
 
-    public HomePageContactComponent(IWebDriver driver, ILogger logger)
+    public HomePageContactComponent(IWebDriver driver, ILogger<HomePageContactComponent> logger)
     {
         Driver = driver;
         Logger = logger;

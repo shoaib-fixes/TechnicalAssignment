@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
+using TechnicalAssignment.Configuration;
 using TechnicalAssignment.Utilities;
 
 namespace TechnicalAssignment.Pages;
@@ -13,9 +14,13 @@ public class AdminNavBarComponent : BasePage
     private static readonly By BrandingLink = By.Id("brandingLink");
     private static readonly By FrontPageLink = By.Id("frontPageLink");
     private static readonly By LogoutButton = By.CssSelector(".btn-outline-danger");
+    private readonly AdminLoginPage _adminLoginPage;
+    private readonly TestConfiguration _testConfig;
 
-    public AdminNavBarComponent(IWebDriver driver) : base(driver)
+    public AdminNavBarComponent(IWebDriver driver, ILogger<AdminNavBarComponent> logger, AdminLoginPage adminLoginPage, TestConfiguration testConfig) : base(driver, logger)
     {
+        _adminLoginPage = adminLoginPage;
+        _testConfig = testConfig;
     }
 
     public override bool IsPageLoaded(TimeSpan? timeout = null)
@@ -69,27 +74,40 @@ public class AdminNavBarComponent : BasePage
         var adminUrl = $"{currentUrl.Scheme}://{currentUrl.Authority}/admin";
 
         Logger.LogInformation("Ensuring navigation to main admin page before logout from {currentUrl}", Driver.Url);
-        Driver.Navigate().GoToUrl(adminUrl);
+        if (!Driver.Url.Contains("/admin"))
+        {
+            Driver.Navigate().GoToUrl(adminUrl);
+        }
 
         try
         {
             WaitHelper.WaitForElement(Driver, LogoutButton, TimeSpan.FromSeconds(5)); 
             Logger.LogDebug("Logout button found. Clicking it.");
             ElementHelper.SafeClick(Driver, LogoutButton);
+
+            // After logout, we are redirected to the home page.
+            // So we explicitly navigate to the admin login page.
+            var adminLoginPageUrl = new Uri(new Uri(_testConfig.BaseUrl), "admin").ToString();
+            Driver.Navigate().GoToUrl(adminLoginPageUrl);
+
+            Logger.LogDebug("Waiting for login page to confirm logout.");
+            _adminLoginPage.WaitForPageToLoad(TimeSpan.FromSeconds(10));
         }
-        catch (WebDriverTimeoutException)
+        catch (Exception ex)
         {
-            Logger.LogWarning("Logout button not found, assuming already logged out.");
-        }
-        Logger.LogDebug("Waiting for login page to confirm logout.");
-        try
-        {
-            var loginPage = new AdminLoginPage(Driver);
-            loginPage.WaitForPageToLoad(TimeSpan.FromSeconds(10));
-        }
-        catch (TimeoutException ex)
-        {
-            Logger.LogWarning(ex, "Login page not reached after logout; current URL: {Url}", Driver.Url);
+            Logger.LogWarning(ex, "An error occurred during logout. Current URL: {Url}", Driver.Url);
+            // We will try to navigate to the admin page anyway to leave a clean state.
+            try
+            {
+                var adminLoginPageUrl = new Uri(new Uri(_testConfig.BaseUrl), "admin").ToString();
+                Driver.Navigate().GoToUrl(adminLoginPageUrl);
+                _adminLoginPage.WaitForPageToLoad(TimeSpan.FromSeconds(5));
+            }
+            catch(Exception navEx)
+            {
+                Logger.LogError(navEx, "Could not navigate to admin login page after a logout error.");
+                throw; 
+            }
         }
     }
 

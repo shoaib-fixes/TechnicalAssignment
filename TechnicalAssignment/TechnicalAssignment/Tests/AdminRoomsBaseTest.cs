@@ -31,17 +31,19 @@ public abstract class AdminRoomsBaseTest : BaseTest
         
         Driver.Navigate().GoToUrl($"{TestConfig.BaseUrl}/admin");
         
-        _adminLogin = new AdminLoginPage(Driver);
+        _adminLogin = GetService<AdminLoginPage>();
         _adminLogin.WaitForPageToLoad();
         
         Logger.LogDebug("Logging into admin panel");
-        _adminNavBar = _adminLogin.Login(TestConfig.AdminCredentials.Username, TestConfig.AdminCredentials.Password);
+        _adminLogin.Login(TestConfig.AdminCredentials.Username, TestConfig.AdminCredentials.Password);
+
+        _adminNavBar = GetService<AdminNavBarComponent>();
         _adminNavBar.WaitForPageToLoad();
         
         Logger.LogDebug("Navigating to rooms section");
         _adminNavBar.NavigateToRooms();
         
-        _roomsPage = new AdminRoomsPage(Driver);
+        _roomsPage = GetService<AdminRoomsPage>();
         _roomsPage.WaitForPageToLoad();
         
         Logger.LogDebug("Admin rooms test setup completed successfully");

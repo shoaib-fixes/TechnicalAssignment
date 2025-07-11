@@ -23,7 +23,7 @@ public class HomePageNavigationTests : BaseTest
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
         Logger.LogDebug("Navigated to URL: {Url}", TestConfig.BaseUrl);
         
-        _homePage = new HomePage(Driver);
+        _homePage = GetService<HomePage>();
         _homePage.WaitForPageToLoad();
         Logger.LogDebug("HomePage loaded successfully for Navigation tests");
     }

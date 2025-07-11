@@ -21,7 +21,7 @@ public class HomePageBookingTests : BaseTest
     {
         Logger.LogInformation("Setting up HomePageBookingTests");
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
-        _homePage = new HomePage(Driver);
+        _homePage = GetService<HomePage>();
         _homePage.WaitForPageToLoad();
     }
 
@@ -30,12 +30,12 @@ public class HomePageBookingTests : BaseTest
     {
         Logger.LogInformation("Starting TC001: Booking section visibility test");
         
-        _homePage.ScrollToBookingSection();
+        _homePage.BookingForm.ScrollToBookingSection();
         
-        Assert.That(_homePage.ValidateBookingFormElements(), Is.True, 
+        Assert.That(_homePage.BookingForm.ValidateBookingFormElements(), Is.True, 
             "All booking form elements should be present and functional");
         
-        var formTitle = _homePage.GetBookingFormTitle();
+        var formTitle = _homePage.BookingForm.GetBookingFormTitle();
         Assert.That(formTitle, Is.EqualTo("Check Availability & Book Your Stay"), 
             "Booking form should have correct title");
         
@@ -47,10 +47,10 @@ public class HomePageBookingTests : BaseTest
     {
         Logger.LogInformation("Starting TC002: Default date values test");
         
-        _homePage.ScrollToBookingSection();
+        _homePage.BookingForm.ScrollToBookingSection();
         
-        var checkInDate = _homePage.GetCheckInDate();
-        var checkOutDate = _homePage.GetCheckOutDate();
+        var checkInDate = _homePage.BookingForm.GetCheckInDate();
+        var checkOutDate = _homePage.BookingForm.GetCheckOutDate();
         
         Logger.LogDebug("Default dates - CheckIn: {CheckIn}, CheckOut: {CheckOut}", checkInDate, checkOutDate);
         
@@ -78,13 +78,13 @@ public class HomePageBookingTests : BaseTest
     {
         Logger.LogInformation("Starting TC003: Check availability with default dates test");
         
-        _homePage.ScrollToBookingSection();
-        _homePage.ClickCheckAvailability();
+        _homePage.BookingForm.ScrollToBookingSection();
+        _homePage.BookingForm.ClickCheckAvailability();
         
-        Assert.That(_homePage.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
             "Rooms section should update after availability check");
         
-        var roomsCount = _homePage.GetAvailableRoomsCount();
+        var roomsCount = _homePage.RoomList.GetAvailableRoomsCount();
         Assert.That(roomsCount, Is.GreaterThan(0), 
             "At least one room should be available for default dates");
         
@@ -96,17 +96,17 @@ public class HomePageBookingTests : BaseTest
     {
         Logger.LogInformation("Starting TC004: Date picker functionality test");
         
-        _homePage.ScrollToBookingSection();
+        _homePage.BookingForm.ScrollToBookingSection();
         
         var testDates = BookingTestData.GenerateRandomBookingDates(1, 30, 1);
         
         Logger.LogDebug("Setting custom dates: {CheckIn} to {CheckOut}", testDates.CheckIn, testDates.CheckOut);
-        _homePage.CheckAvailability(testDates.CheckIn, testDates.CheckOut);
+        _homePage.BookingForm.CheckAvailability(testDates.CheckIn, testDates.CheckOut);
         
-        Assert.That(_homePage.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
             "Rooms section should update with custom dates");
         
-        var roomsCount = _homePage.GetAvailableRoomsCount();
+        var roomsCount = _homePage.RoomList.GetAvailableRoomsCount();
         Assert.That(roomsCount, Is.GreaterThan(0), 
             "Rooms should be available for valid future dates");
         
@@ -118,9 +118,9 @@ public class HomePageBookingTests : BaseTest
     {
         Logger.LogInformation("Starting TC005: Past dates validation test");
         
-        _homePage.ScrollToBookingSection();
+        _homePage.BookingForm.ScrollToBookingSection();
         
-        var validationResult = _homePage.ValidatePastDatesHandling();
+        var validationResult = _homePage.DateValidation.ValidatePastDatesHandling();
         
         Assert.That(validationResult.IsValid, Is.True, 
             $"Past dates should be handled correctly. Validation errors: {string.Join(", ", validationResult.ValidationErrors)}");
@@ -145,9 +145,9 @@ public class HomePageBookingTests : BaseTest
     {
         Logger.LogInformation("Starting TC006: Check-out before check-in validation test");
         
-        _homePage.ScrollToBookingSection();
+        _homePage.BookingForm.ScrollToBookingSection();
         
-        var validationResult = _homePage.ValidateInvalidDateOrderHandling();
+        var validationResult = _homePage.DateValidation.ValidateInvalidDateOrderHandling();
         
         Assert.That(validationResult.IsValid, Is.True, 
             $"Invalid date order should be handled correctly. Validation errors: {string.Join(", ", validationResult.ValidationErrors)}");
@@ -172,9 +172,9 @@ public class HomePageBookingTests : BaseTest
     {
         Logger.LogInformation("Starting TC007: Same day check-in/check-out validation test");
         
-        _homePage.ScrollToBookingSection();
+        _homePage.BookingForm.ScrollToBookingSection();
         
-        var validationResult = _homePage.ValidateSameDayBookingHandling();
+        var validationResult = _homePage.DateValidation.ValidateSameDayBookingHandling();
         
         Assert.That(validationResult.IsValid, Is.True, 
             $"Same-day booking should be handled correctly. Validation errors: {string.Join(", ", validationResult.ValidationErrors)}");
@@ -199,15 +199,15 @@ public class HomePageBookingTests : BaseTest
     {
         Logger.LogInformation("Starting TC008: Room card navigation test");
         
-        _homePage.ScrollToBookingSection();
-        _homePage.ClickCheckAvailability();
+        _homePage.BookingForm.ScrollToBookingSection();
+        _homePage.BookingForm.ClickCheckAvailability();
         
-        Assert.That(_homePage.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
+        Assert.That(_homePage.RoomList.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15)), Is.True, 
             "Rooms should be available for booking");
         
-        _homePage.ClickFirstAvailableRoom();
+        _homePage.RoomList.ClickFirstAvailableRoom();
         
-        var reservationPage = new ReservationPage(Driver);
+        var reservationPage = GetService<ReservationPage>();
         reservationPage.WaitForPageToLoad(TimeSpan.FromSeconds(15));
         
         Assert.That(reservationPage.IsOnReservationPage(), Is.True, 
@@ -232,10 +232,10 @@ public class HomePageBookingTests : BaseTest
             BrowserHelper.SetViewportSize(Driver, width, height);
             
             Logger.LogDebug("Scrolling to booking section on {DeviceName}", deviceName);
-            _homePage.ScrollToBookingSection();
+            _homePage.BookingForm.ScrollToBookingSection();
             
             Logger.LogDebug("Validating booking form elements on {DeviceName}", deviceName);
-            Assert.That(_homePage.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
+            Assert.That(_homePage.BookingForm.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
                 $"Booking form should display correctly on {deviceName} ({width}x{height})");
             
             Logger.LogInformation("TC027a: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 
@@ -261,10 +261,10 @@ public class HomePageBookingTests : BaseTest
             BrowserHelper.SetViewportSize(Driver, width, height);
             
             Logger.LogDebug("Scrolling to booking section on {DeviceName}", deviceName);
-            _homePage.ScrollToBookingSection();
+            _homePage.BookingForm.ScrollToBookingSection();
             
             Logger.LogDebug("Validating booking form elements on {DeviceName}", deviceName);
-            Assert.That(_homePage.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
+            Assert.That(_homePage.BookingForm.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
                 $"Booking form should display correctly on {deviceName} ({width}x{height})");
             
             Logger.LogInformation("TC027b: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 
@@ -290,10 +290,10 @@ public class HomePageBookingTests : BaseTest
             BrowserHelper.SetViewportSize(Driver, width, height);
             
             Logger.LogDebug("Scrolling to booking section on {DeviceName}", deviceName);
-            _homePage.ScrollToBookingSection();
+            _homePage.BookingForm.ScrollToBookingSection();
             
             Logger.LogDebug("Validating booking form elements on {DeviceName}", deviceName);
-            Assert.That(_homePage.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
+            Assert.That(_homePage.BookingForm.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
                 $"Booking form should display correctly on {deviceName} ({width}x{height})");
             
             Logger.LogInformation("TC027c: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 

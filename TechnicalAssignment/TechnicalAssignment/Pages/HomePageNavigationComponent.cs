@@ -10,18 +10,15 @@ namespace TechnicalAssignment.Pages;
 public class HomePageNavigationComponent
 {
     protected readonly IWebDriver Driver;
-    protected readonly ILogger Logger;
+    protected readonly ILogger<HomePageNavigationComponent> Logger;
     
     private static readonly By SocialMediaIconsContainer = By.CssSelector(".d-flex.gap-2");
     private static readonly By FacebookIcon = By.CssSelector(".d-flex.gap-2 a:has(.bi-facebook)");
     private static readonly By InstagramIcon = By.CssSelector(".d-flex.gap-2 a:has(.bi-instagram)");
     private static readonly By TwitterIcon = By.CssSelector(".d-flex.gap-2 a:has(.bi-twitter)");
     private static readonly By AllSocialIcons = By.CssSelector(".d-flex.gap-2 a");
-    private static readonly By FacebookIconElement = By.CssSelector(".bi-facebook");
-    private static readonly By InstagramIconElement = By.CssSelector(".bi-instagram");
-    private static readonly By TwitterIconElement = By.CssSelector(".bi-twitter");
 
-    public HomePageNavigationComponent(IWebDriver driver, ILogger logger)
+    public HomePageNavigationComponent(IWebDriver driver, ILogger<HomePageNavigationComponent> logger)
     {
         Driver = driver;
         Logger = logger;
@@ -136,17 +133,20 @@ public class HomePageNavigationComponent
         {
             var containerElement = GetSocialMediaIconsContainerElement();
             var containerClasses = containerElement.GetAttribute("class") ?? "";
-            
+
             if (!containerClasses.Contains("d-flex") || !containerClasses.Contains("gap-2"))
             {
                 Logger.LogWarning("Social Media Icons container does not have correct classes: {Classes}", containerClasses);
                 return false;
             }
             
-            var iconLinks = containerElement.FindElements(By.TagName("a"));
-            if (iconLinks.Count != 3)
+            var facebookIcon = ElementHelper.IsElementVisible(Driver, FacebookIcon, TimeSpan.FromSeconds(2));
+            var instagramIcon = ElementHelper.IsElementVisible(Driver, InstagramIcon, TimeSpan.FromSeconds(2));
+            var twitterIcon = ElementHelper.IsElementVisible(Driver, TwitterIcon, TimeSpan.FromSeconds(2));
+            
+            if (!facebookIcon || !instagramIcon || !twitterIcon)
             {
-                Logger.LogWarning("Social Media Icons container should have 3 icon links, found: {Count}", iconLinks.Count);
+                Logger.LogWarning("One or more social media icons are not visible");
                 return false;
             }
             
@@ -216,9 +216,9 @@ public class HomePageNavigationComponent
         Logger.LogDebug("Validating Bootstrap icons loading");
         try
         {
-            var facebookIcon = ElementHelper.IsElementVisible(Driver, FacebookIconElement, TimeSpan.FromSeconds(2));
-            var instagramIcon = ElementHelper.IsElementVisible(Driver, InstagramIconElement, TimeSpan.FromSeconds(2));
-            var twitterIcon = ElementHelper.IsElementVisible(Driver, TwitterIconElement, TimeSpan.FromSeconds(2));
+            var facebookIcon = ElementHelper.IsElementVisible(Driver, FacebookIcon, TimeSpan.FromSeconds(2));
+            var instagramIcon = ElementHelper.IsElementVisible(Driver, InstagramIcon, TimeSpan.FromSeconds(2));
+            var twitterIcon = ElementHelper.IsElementVisible(Driver, TwitterIcon, TimeSpan.FromSeconds(2));
             
             if (!facebookIcon || !instagramIcon || !twitterIcon)
             {

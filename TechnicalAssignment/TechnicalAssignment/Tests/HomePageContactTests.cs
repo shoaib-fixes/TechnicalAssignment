@@ -27,7 +27,7 @@ public class HomePageContactTests : BaseTest
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
         Logger.LogDebug("Navigated to URL: {Url}", TestConfig.BaseUrl);
 
-        _homePage = new HomePage(Driver);
+        _homePage = GetService<HomePage>();
         _homePage.WaitForPageToLoad();
         Logger.LogDebug("HomePage loaded successfully for Contact tests");
     }
@@ -169,7 +169,7 @@ public class HomePageContactTests : BaseTest
         Logger.LogDebug("Step 6: Navigating to admin panel");
         Driver.Navigate().GoToUrl($"{TestConfig.BaseUrl}/admin");
         
-        var adminLoginPage = new AdminLoginPage(Driver);
+        var adminLoginPage = GetService<AdminLoginPage>();
         adminLoginPage.WaitForPageToLoad();
         
         Logger.LogDebug("Step 7: Logging into admin panel");
@@ -178,7 +178,7 @@ public class HomePageContactTests : BaseTest
         
         adminLoginPage.Login(TestConfig.AdminCredentials.Username, TestConfig.AdminCredentials.Password);
         
-        var adminNavBar = new AdminNavBarComponent(Driver);
+        var adminNavBar = GetService<AdminNavBarComponent>();
         adminNavBar.WaitForPageToLoad();
         
         Logger.LogDebug("Verifying successful login");
@@ -369,13 +369,13 @@ public class HomePageContactTests : BaseTest
         Logger.LogDebug("Step 2: Navigating to admin panel");
         Driver.Navigate().GoToUrl($"{TestConfig.BaseUrl}/admin");
         
-        var adminLoginPage = new AdminLoginPage(Driver);
+        var adminLoginPage = GetService<AdminLoginPage>();
         adminLoginPage.WaitForPageToLoad();
         
         Logger.LogDebug("Step 3: Logging into admin panel");
         adminLoginPage.Login(TestConfig.AdminCredentials.Username, TestConfig.AdminCredentials.Password);
         
-        var adminNavBar = new AdminNavBarComponent(Driver);
+        var adminNavBar = GetService<AdminNavBarComponent>();
         adminNavBar.WaitForPageToLoad();
         
         Logger.LogDebug("Step 4: Navigating to messages section");
@@ -432,11 +432,11 @@ public class HomePageContactTests : BaseTest
             "Setup: Contact form submission should succeed");
         
         Driver.Navigate().GoToUrl($"{TestConfig.BaseUrl}/admin");
-        var adminLoginPage = new AdminLoginPage(Driver);
+        var adminLoginPage = GetService<AdminLoginPage>();
         adminLoginPage.WaitForPageToLoad();
         adminLoginPage.Login(TestConfig.AdminCredentials.Username, TestConfig.AdminCredentials.Password);
         
-        var adminNavBar = new AdminNavBarComponent(Driver);
+        var adminNavBar = GetService<AdminNavBarComponent>();
         adminNavBar.WaitForPageToLoad();
         var adminMessagesPage = adminNavBar.NavigateToMessages();
         

@@ -19,7 +19,7 @@ public class HomePageSocialMediaIconsTests : BaseTest
     public void PageSetup()
     {
         Driver.Navigate().GoToUrl(TestConfig.BaseUrl);
-        _homePage = new HomePage(Driver);
+        _homePage = GetService<HomePage>();
         _homePage.WaitForPageToLoad();
     }
 

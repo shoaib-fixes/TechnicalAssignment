@@ -8,7 +8,7 @@ namespace TechnicalAssignment.Pages;
 public class ReservationPagePriceSummaryComponent
 {
     protected readonly IWebDriver Driver;
-    protected readonly ILogger Logger;
+    protected readonly ILogger<ReservationPagePriceSummaryComponent> Logger;
     
     private static readonly By PriceSummaryCard = By.CssSelector(".card.bg-light.border-0");
     private static readonly By BasePrice = By.XPath("//div[@class='d-flex justify-content-between mb-2'][1]/span[2]");
@@ -17,7 +17,7 @@ public class ReservationPagePriceSummaryComponent
     private static readonly By TotalPrice = By.XPath("//div[@class='d-flex justify-content-between fw-bold']/span[2]");
     private static readonly By NightsCount = By.XPath("//div[@class='d-flex justify-content-between mb-2'][1]/span[1]");
 
-    public ReservationPagePriceSummaryComponent(IWebDriver driver, ILogger logger)
+    public ReservationPagePriceSummaryComponent(IWebDriver driver, ILogger<ReservationPagePriceSummaryComponent> logger)
     {
         Driver = driver;
         Logger = logger;
