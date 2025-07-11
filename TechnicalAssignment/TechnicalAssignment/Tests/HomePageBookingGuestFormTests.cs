@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
+using OpenQA.Selenium;
 using TechnicalAssignment.Pages;
 using TechnicalAssignment.Utilities;
 using TechnicalAssignment.Models;
@@ -115,10 +116,10 @@ public class HomePageBookingGuestFormTests : BaseTest
         Logger.LogInformation("TC015b: {FieldName} boundary validation test passed", fieldName);
     }
 
-    [Test(Description = "TC016: Verify that valid guest information allows successful booking")]
-    public void GuestForm_WithValidData_ShouldAllowSuccessfulBooking()
+    [Test(Description = "TC016: Verify complete end-to-end booking workflow with valid guest information")]
+    public void EndToEndBooking_WithValidGuestData_ShouldCompleteSuccessfully()
     {
-        Logger.LogInformation("Starting TC016: Valid data submission test");
+        Logger.LogInformation("Starting TC016: End-to-end booking workflow test");
         
         Assert.That(_homePage.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
@@ -138,7 +139,7 @@ public class HomePageBookingGuestFormTests : BaseTest
         Assert.That(_reservationPage.IsBookingConfirmed(), Is.True, 
             "Booking should be confirmed with valid guest information");
         
-        Logger.LogInformation("TC016: Valid data submission test passed successfully");
+        Logger.LogInformation("TC016: End-to-end booking workflow test passed successfully");
     }
 
     [Test(Description = "TC017: Verify complete end-to-end booking workflow functions correctly")]
@@ -243,8 +244,18 @@ public class HomePageBookingGuestFormTests : BaseTest
         _homePage.WaitForPageToLoad(TimeSpan.FromSeconds(10));
         _homePage.ScrollToBookingSection();
         
-        _homePage.CheckAvailability(testDates.CheckIn, testDates.CheckOut);
-        _homePage.WaitForRoomsToUpdate(TimeSpan.FromSeconds(15));
+        _homePage.SetCheckInDate(testDates.CheckIn);
+        _homePage.SetCheckOutDate(testDates.CheckOut);
+        _homePage.ClickCheckAvailability();
+
+        try
+        {
+            _homePage.WaitForRoomsToUpdate(TimeSpan.FromSeconds(10));
+        }
+        catch (System.TimeoutException)
+        {
+            Logger.LogDebug("No rooms available after booking - this is expected behavior");
+        }
         
         var availableRoomsAfter = _homePage.GetAvailableRoomTypesWithRetry("after booking");
         
@@ -260,14 +271,14 @@ public class HomePageBookingGuestFormTests : BaseTest
         }
         else
         {
-            Logger.LogError("CRITICAL BUG DETECTED: The specific room that was already booked is still available for booking on the same dates!");
+            Logger.LogError("The specific room that was already booked is still available for booking on the same dates!");
             Logger.LogError("Booked room details - Title: {Title}, Price: £{Price}, Features: {Features}", 
                 bookedRoomTitle, bookedRoomPrice, string.Join(", ", bookedRoomFeatures));
             Logger.LogError("Available rooms after booking: {AvailableRooms}", string.Join(", ", availableRoomsAfter));
             
             ScreenshotHelper.CaptureScreenshot(Driver, "DoubleBooking_CriticalBug_SameRoomAvailable");
             
-            Assert.Fail($"CRITICAL DOUBLE BOOKING BUG: The specific room ({bookedRoomTitle}, £{bookedRoomPrice}) that was already booked " +
+            Assert.Fail($"The specific room ({bookedRoomTitle}, £{bookedRoomPrice}) that was already booked " +
                 $"is still available for booking on the same dates ({testDates.CheckIn} to {testDates.CheckOut}). " +
                 "This indicates a serious double booking vulnerability in the system.");
         }

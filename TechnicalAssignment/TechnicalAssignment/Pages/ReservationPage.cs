@@ -21,30 +21,7 @@ public class ReservationPage : BasePage
     
     private static readonly By BookingCard = By.CssSelector(".card.border-0.shadow.booking-card");
     private static readonly By RoomPriceDisplay = By.CssSelector(".fs-2.fw-bold.text-primary");
-    private static readonly By CalendarComponent = By.CssSelector(".rbc-calendar");
-    private static readonly By CalendarNextButton = By.XPath("//div[@class='rbc-toolbar']//button[text()='Next']");
-    private static readonly By CalendarBackButton = By.XPath("//div[@class='rbc-toolbar']//button[text()='Back']");
-    private static readonly By CalendarTodayButton = By.XPath("//div[@class='rbc-toolbar']//button[text()='Today']");
-    private static readonly By CalendarToolbarLabel = By.CssSelector(".rbc-toolbar-label");
-    
-    private static readonly By PriceSummaryCard = By.CssSelector(".card.bg-light.border-0");
-    private static readonly By BasePrice = By.XPath("//div[@class='d-flex justify-content-between mb-2'][1]/span[2]");
-    private static readonly By CleaningFee = By.XPath("//span[text()='Cleaning fee']/parent::div/span[2]");
-    private static readonly By ServiceFee = By.XPath("//span[text()='Service fee']/parent::div/span[2]");
-    private static readonly By TotalPrice = By.XPath("//div[@class='d-flex justify-content-between fw-bold']/span[2]");
-    private static readonly By NightsCount = By.XPath("//div[@class='d-flex justify-content-between mb-2'][1]/span[1]");
-    
     private static readonly By ReserveNowButton = By.Id("doReservation");
-    
-    private static readonly By FirstNameInput = By.CssSelector(".room-firstname");
-    private static readonly By LastNameInput = By.CssSelector(".room-lastname");
-    private static readonly By EmailInput = By.CssSelector(".room-email");
-    private static readonly By PhoneInput = By.CssSelector(".room-phone");
-    private static readonly By GuestFormReserveButton = By.XPath("//div[contains(@class, 'room-booking-form')]/..//button[text()='Reserve Now']");
-    private static readonly By CancelButton = By.XPath("//button[text()='Cancel']");
-    
-    private static readonly By ValidationErrors = By.CssSelector(".alert.alert-danger");
-    private static readonly By ValidationErrorList = By.CssSelector(".alert.alert-danger ul li");
     
     private static readonly By BookingConfirmedTitle = By.XPath("//h2[text()='Booking Confirmed']");
     private static readonly By ConfirmationMessage = By.XPath("//p[contains(text(), 'Your booking has been confirmed')]");
@@ -54,8 +31,15 @@ public class ReservationPage : BasePage
     private static readonly By SimilarRoomsSection = By.XPath("//h2[text()='Similar Rooms You Might Like']");
     private static readonly By SimilarRoomCards = By.CssSelector(".col-md-6.col-lg-4 .card");
 
+    public ReservationPagePriceSummaryComponent PriceSummary { get; }
+    public ReservationPageGuestFormComponent GuestForm { get; }
+    public ReservationPageCalendarComponent Calendar { get; }
+
     public ReservationPage(IWebDriver driver) : base(driver)
     {
+        PriceSummary = new ReservationPagePriceSummaryComponent(driver, Logger);
+        GuestForm = new ReservationPageGuestFormComponent(driver, Logger);
+        Calendar = new ReservationPageCalendarComponent(driver, Logger);
     }
 
     public override bool IsPageLoaded(TimeSpan? timeout = null)
@@ -278,8 +262,7 @@ public class ReservationPage : BasePage
 
     public bool IsCalendarVisible()
     {
-        Logger.LogDebug("Checking if calendar is visible");
-        return ElementHelper.IsElementVisible(Driver, CalendarComponent, TimeSpan.FromSeconds(5));
+        return Calendar.IsCalendarVisible();
     }
 
     public void ClickCalendarDate(int day)
@@ -291,179 +274,51 @@ public class ReservationPage : BasePage
 
     public void ClickCalendarNext()
     {
-        Logger.LogDebug("Clicking calendar next button");
-        ElementHelper.SafeClick(Driver, CalendarNextButton);
+        Calendar.ClickNext();
     }
 
     public void ClickCalendarBack()
     {
-        Logger.LogDebug("Clicking calendar back button");
-        ElementHelper.SafeClick(Driver, CalendarBackButton);
+        Calendar.ClickBack();
     }
 
     public void ClickCalendarToday()
     {
-        Logger.LogDebug("Clicking calendar today button");
-        ElementHelper.SafeClick(Driver, CalendarTodayButton);
+        Calendar.ClickToday();
     }
 
     public string GetCalendarMonth()
     {
-        Logger.LogDebug("Getting current calendar month/year");
-        return ElementHelper.GetElementText(Driver, CalendarToolbarLabel);
+        return Calendar.GetCurrentMonth();
     }
 
     public string GetBasePriceFromSummary()
     {
-        Logger.LogDebug("Getting base price from summary");
-        
-        WaitHelper.WaitForElement(Driver, PriceSummaryCard, TimeSpan.FromSeconds(10));
-        
-        for (int attempt = 0; attempt < 3; attempt++)
-        {
-            try
-            {
-                var basePriceElement = WaitHelper.WaitForElement(Driver, BasePrice, TimeSpan.FromSeconds(5));
-                var basePriceText = basePriceElement.Text;
-                Logger.LogDebug("Retrieved base price text: '{BasePriceText}' on attempt {Attempt}", basePriceText, attempt + 1);
-                return basePriceText;
-            }
-            catch (StaleElementReferenceException ex)
-            {
-                Logger.LogWarning("Stale element when getting base price on attempt {Attempt}: {Message}", attempt + 1, ex.Message);
-                if (attempt == 2) throw;
-                
-                WaitHelper.WaitForCondition(Driver, _ => 
-                {
-                    try
-                    {
-                        Driver.FindElement(PriceSummaryCard);
-                        return true;
-                    }
-                    catch (NoSuchElementException)
-                    {
-                        return false;
-                    }
-                }, TimeSpan.FromSeconds(2));
-            }
-        }
-        
-        return "";
+        return PriceSummary.GetBasePriceText();
     }
 
     public string GetCleaningFee()
     {
-        Logger.LogDebug("Getting cleaning fee");
-        return ElementHelper.GetElementText(Driver, CleaningFee);
+        return PriceSummary.GetCleaningFeeText();
     }
 
     public string GetServiceFee()
     {
-        Logger.LogDebug("Getting service fee");
-        return ElementHelper.GetElementText(Driver, ServiceFee);
+        return PriceSummary.GetServiceFeeText();
     }
 
     public string GetTotalPrice()
     {
-        Logger.LogDebug("Getting total price");
-        
-        WaitHelper.WaitForElement(Driver, PriceSummaryCard, TimeSpan.FromSeconds(10));
-        
-        for (int attempt = 0; attempt < 3; attempt++)
-        {
-            try
-            {
-                var totalPriceElement = WaitHelper.WaitForElement(Driver, TotalPrice, TimeSpan.FromSeconds(5));
-                var totalPriceText = totalPriceElement.Text;
-                Logger.LogDebug("Retrieved total price text: '{TotalPriceText}' on attempt {Attempt}", totalPriceText, attempt + 1);
-                return totalPriceText;
-            }
-            catch (StaleElementReferenceException ex)
-            {
-                Logger.LogWarning("Stale element when getting total price on attempt {Attempt}: {Message}", attempt + 1, ex.Message);
-                if (attempt == 2) throw;
-                
-                WaitHelper.WaitForCondition(Driver, _ => 
-                {
-                    try
-                    {
-                        Driver.FindElement(PriceSummaryCard);
-                        return true;
-                    }
-                    catch (NoSuchElementException)
-                    {
-                        return false;
-                    }
-                }, TimeSpan.FromSeconds(2));
-            }
-        }
-        
-        return "";
+        return PriceSummary.GetTotalPriceText();
     }
 
     public string GetNightsCount()
     {
-        Logger.LogDebug("Getting nights count");
-        
-        WaitHelper.WaitForElement(Driver, PriceSummaryCard, TimeSpan.FromSeconds(10));
-        
-        for (int attempt = 0; attempt < 3; attempt++)
-        {
-            try
-            {
-                var nightsElement = WaitHelper.WaitForElement(Driver, NightsCount, TimeSpan.FromSeconds(5));
-                var nightsText = nightsElement.Text;
-                Logger.LogDebug("Retrieved nights count text: '{NightsText}' on attempt {Attempt}", nightsText, attempt + 1);
-                return nightsText;
-            }
-            catch (StaleElementReferenceException ex)
-            {
-                Logger.LogWarning("Stale element when getting nights count on attempt {Attempt}: {Message}", attempt + 1, ex.Message);
-                if (attempt == 2) throw;
-                
-                WaitHelper.WaitForCondition(Driver, _ => 
-                {
-                    try
-                    {
-                        Driver.FindElement(PriceSummaryCard);
-                        return true;
-                    }
-                    catch (NoSuchElementException)
-                    {
-                        return false;
-                    }
-                }, TimeSpan.FromSeconds(2));
-            }
-        }
-        
-        return "";
+        return PriceSummary.GetNightsCountText();
     }
 
-    public bool ValidatePriceSummary(decimal expectedRoomPrice, int expectedNights)
-    {
-        Logger.LogDebug("Validating price summary for {Nights} nights at £{Price}", expectedNights, expectedRoomPrice);
-        
-        var basePriceText = GetBasePriceFromSummary();
-        var cleaningFeeText = GetCleaningFee();
-        var serviceFeeText = GetServiceFee();
-        var totalPriceText = GetTotalPrice();
-        
-        var basePrice = PriceHelper.ExtractPriceValue(basePriceText);
-        var cleaningFee = PriceHelper.ExtractPriceValue(cleaningFeeText);
-        var serviceFee = PriceHelper.ExtractPriceValue(serviceFeeText);
-        var totalPrice = PriceHelper.ExtractPriceValue(totalPriceText);
-        
-        var expectedBase = expectedRoomPrice * expectedNights;
-        var expectedTotal = expectedBase + cleaningFee + serviceFee;
-        
-        Logger.LogDebug("Price validation - Base: {Base}, Cleaning: {Cleaning}, Service: {Service}, Total: {Total}",
-            basePrice, cleaningFee, serviceFee, totalPrice);
-        
-        return Math.Abs(basePrice - expectedBase) < 0.01m && 
-               Math.Abs(totalPrice - expectedTotal) < 0.01m &&
-               cleaningFee == 25m && 
-               serviceFee == 15m;
-    }
+    // Removed ValidatePriceSummary method - validation logic should be in test methods
+    // Use PriceSummary component methods to get individual price values for assertions
 
     public void ClickReserveNow()
     {
@@ -487,52 +342,27 @@ public class ReservationPage : BasePage
 
     public bool IsGuestFormVisible()
     {
-        Logger.LogDebug("Checking if guest form is visible");
-        return ElementHelper.IsElementVisible(Driver, FirstNameInput, TimeSpan.FromSeconds(2));
+        return GuestForm.IsGuestFormVisible();
     }
 
     public bool IsGuestFormVisibleFast()
     {
-        try
-        {
-            return Driver.FindElements(FirstNameInput).Count > 0;
-        }
-        catch
-        {
-            return false;
-        }
+        return GuestForm.IsGuestFormVisibleFast();
     }
 
     public void FillGuestInformation(string firstName, string lastName, string email, string phone)
     {
-        Logger.LogDebug("Filling guest information for {FirstName}", firstName);
-        
-        ElementHelper.SafeSendKeys(Driver, FirstNameInput, firstName);
-        ElementHelper.SafeSendKeys(Driver, LastNameInput, lastName);
-        ElementHelper.SafeSendKeys(Driver, EmailInput, email);
-        ElementHelper.SafeSendKeys(Driver, PhoneInput, phone);
+        GuestForm.FillGuestInformation(firstName, lastName, email, phone);
     }
 
     public void SubmitGuestForm()
     {
-        Logger.LogDebug("Submitting guest form");
-        try
-        {
-            var button = WaitHelper.WaitForElement(Driver, GuestFormReserveButton, TimeSpan.FromSeconds(5));
-            ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", button);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to submit guest form via JavaScript click");
-            // Fallback to original method if JS fails
-            ElementHelper.SafeClick(Driver, GuestFormReserveButton);
-        }
+        GuestForm.SubmitForm();
     }
 
     public void ClickCancel()
     {
-        Logger.LogDebug("Clicking Cancel button");
-        ElementHelper.SafeClick(Driver, CancelButton);
+        GuestForm.ClickCancel();
     }
 
     public void CompleteBooking(string firstName, string lastName, string email, string phone)
@@ -546,23 +376,17 @@ public class ReservationPage : BasePage
 
     public bool AreValidationErrorsVisible()
     {
-        Logger.LogDebug("Checking if validation errors are visible");
-        return ElementHelper.IsElementVisible(Driver, ValidationErrors, TimeSpan.FromSeconds(5));
+        return GuestForm.AreValidationErrorsVisible();
     }
 
     public List<string> GetValidationErrors()
     {
-        Logger.LogDebug("Getting validation errors");
-        var errorElements = Driver.FindElements(ValidationErrorList);
-        var errors = errorElements.Select(e => e.Text).ToList();
-        Logger.LogDebug("Found {Count} validation errors", errors.Count);
-        return errors;
+        return GuestForm.GetValidationErrors();
     }
 
     public bool HasValidationError(string errorText)
     {
-        var errors = GetValidationErrors();
-        return errors.Any(error => error.Contains(errorText, StringComparison.OrdinalIgnoreCase));
+        return GuestForm.HasValidationError(errorText);
     }
 
     public bool IsBookingConfirmed()
@@ -645,7 +469,7 @@ public class ReservationPage : BasePage
     public void WaitForGuestFormState()
     {
         Logger.LogDebug("Waiting for guest form state");
-        WaitHelper.WaitForElement(Driver, FirstNameInput, TimeSpan.FromSeconds(2));
+        WaitHelper.WaitForCondition(Driver, d => GuestForm.IsGuestFormVisible(), TimeSpan.FromSeconds(2));
     }
 
     public void WaitForConfirmationState()
@@ -777,7 +601,7 @@ public class ReservationPage : BasePage
 
     public IWebElement GetGuestFormElement()
     {
-        return WaitHelper.WaitForElement(Driver, FirstNameInput).FindElement(By.XPath("ancestor::form"));
+        return GuestForm.GetGuestFormElement();
     }
 
     public static bool TryParseDateFromUrl(string urlDate, out DateTime parsedDate)

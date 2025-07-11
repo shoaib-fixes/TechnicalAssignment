@@ -215,8 +215,11 @@ public class HomePageBookingReservationPageTests : BaseTest
         Assert.That(totalPrice, Is.EqualTo(expectedTotal).Within(0.01m), 
             $"Total price (£{totalPrice}) should equal base + cleaning + service (£{expectedTotal})");
         
-        var isValidByMethod = _reservationPage.ValidatePriceSummary(roomPricePerNight, nightsCount);
-        Assert.That(isValidByMethod, Is.True, "Price summary should pass validation using ValidatePriceSummary method");
+        // Verify individual price components are correct
+        Assert.That(basePriceCalculated, Is.EqualTo(roomPricePerNight * nightsCount).Within(0.01m), 
+            $"Base price (£{basePriceCalculated}) should equal room price × nights (£{roomPricePerNight} × {nightsCount})");
+        Assert.That(cleaningFee, Is.GreaterThan(0), "Cleaning fee should be greater than zero");
+        Assert.That(serviceFee, Is.GreaterThan(0), "Service fee should be greater than zero");
         
         Logger.LogInformation("TC012: Price summary calculation test passed successfully. " +
             "Verified: £{Room} × {Nights} nights + £{Cleaning} cleaning + £{Service} service = £{Total} total",

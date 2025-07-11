@@ -25,10 +25,13 @@ public class HomePageBookingComponent
     private static readonly By BookingFormTitle = By.CssSelector("#booking h3.card-title");
     private static readonly By RoomCardBookNowButtons = By.CssSelector(".room-card .btn-primary");
 
+    public HomePageBookingDateValidationComponent DateValidation { get; }
+
     public HomePageBookingComponent(IWebDriver driver, ILogger logger)
     {
         Driver = driver;
         Logger = logger;
+        DateValidation = new HomePageBookingDateValidationComponent(driver, logger);
     }
 
     public bool IsPageLoaded(TimeSpan? timeout = null)
@@ -692,193 +695,17 @@ public class HomePageBookingComponent
 
     public DateValidationResult ValidatePastDatesHandling()
     {
-        var result = new DateValidationResult();
-        
-        try
-        {
-            var yesterday = DateTime.Now.AddDays(-1).ToString("dd/MM/yyyy");
-            var dayBeforeYesterday = DateTime.Now.AddDays(-2).ToString("dd/MM/yyyy");
-            
-            SetCheckInDate(dayBeforeYesterday);
-            SetCheckOutDate(yesterday);
-            ClickCheckAvailability();
-            
-            WaitForRoomsToUpdate(TimeSpan.FromSeconds(10));
-            
-            var currentCheckIn = GetCheckInDate();
-            var currentCheckOut = GetCheckOutDate();
-            
-            result.CheckInDate = currentCheckIn;
-            result.CheckOutDate = currentCheckOut;
-            
-            bool pastDatesWereSet = false;
-            if (DateTime.TryParseExact(currentCheckIn, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, 
-                System.Globalization.DateTimeStyles.None, out var checkInParsed) &&
-                DateTime.TryParseExact(currentCheckOut, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, 
-                System.Globalization.DateTimeStyles.None, out var checkOutParsed))
-            {
-                result.ParsedCheckInDate = checkInParsed;
-                result.ParsedCheckOutDate = checkOutParsed;
-                pastDatesWereSet = checkInParsed < DateTime.Today;
-                result.HasPastCheckIn = pastDatesWereSet;
-            }
-            
-            if (pastDatesWereSet)
-            {
-                var roomsCount = GetAvailableRoomsCount();
-                
-                if (roomsCount > 0)
-                {
-                    result.ValidationErrors.Add($"Rooms are available for past dates: {roomsCount} rooms found for {currentCheckIn} to {currentCheckOut}");
-                    result.IsValid = false;
-                }
-                else
-                {
-                    result.IsValid = true;
-                }
-            }
-            else
-            {
-                result.IsValid = true;
-                
-                if (result.ParsedCheckInDate.HasValue && result.ParsedCheckInDate.Value < DateTime.Today)
-                {
-                    result.ValidationErrors.Add($"Check-in date should not be in the past. Current check-in: {currentCheckIn}");
-                    result.IsValid = false;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error validating past dates handling");
-            result.ValidationErrors.Add($"Error during past dates validation: {ex.Message}");
-            result.IsValid = false;
-        }
-        
-        return result;
+        return DateValidation.GetPastDatesHandlingResult();
     }
 
     public DateValidationResult ValidateInvalidDateOrderHandling()
     {
-        var result = new DateValidationResult();
-        
-        try
-        {
-            var nextWeek = DateTime.Now.AddDays(7).ToString("dd/MM/yyyy");
-            var tomorrow = DateTime.Now.AddDays(1).ToString("dd/MM/yyyy");
-            
-            SetCheckInDate(nextWeek);
-            SetCheckOutDate(tomorrow);
-            ClickCheckAvailability();
-            
-            WaitForRoomsToUpdate(TimeSpan.FromSeconds(10));
-            
-            var currentCheckIn = GetCheckInDate();
-            var currentCheckOut = GetCheckOutDate();
-            
-            result.CheckInDate = currentCheckIn;
-            result.CheckOutDate = currentCheckOut;
-            
-            bool invalidDatesWereSet = false;
-            if (DateTime.TryParseExact(currentCheckIn, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, 
-                System.Globalization.DateTimeStyles.None, out var checkInParsed) &&
-                DateTime.TryParseExact(currentCheckOut, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, 
-                System.Globalization.DateTimeStyles.None, out var checkOutParsed))
-            {
-                result.ParsedCheckInDate = checkInParsed;
-                result.ParsedCheckOutDate = checkOutParsed;
-                invalidDatesWereSet = checkOutParsed < checkInParsed;
-                result.HasInvalidDateOrder = invalidDatesWereSet;
-            }
-            
-            if (invalidDatesWereSet)
-            {
-                var roomsCount = GetAvailableRoomsCount();
-                
-                if (roomsCount > 0)
-                {
-                    result.ValidationErrors.Add($"Rooms are available for invalid date range: {roomsCount} rooms found for {currentCheckIn} to {currentCheckOut}");
-                    result.IsValid = false;
-                }
-                else
-                {
-                    result.IsValid = true;
-                }
-            }
-            else
-            {
-                result.IsValid = true;
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error validating invalid date order handling");
-            result.ValidationErrors.Add($"Error during invalid date order validation: {ex.Message}");
-            result.IsValid = false;
-        }
-        
-        return result;
+        return DateValidation.GetInvalidDateOrderHandlingResult();
     }
 
     public DateValidationResult ValidateSameDayBookingHandling()
     {
-        var result = new DateValidationResult();
-        
-        try
-        {
-            var today = DateTime.Now.ToString("dd/MM/yyyy");
-            
-            SetCheckInDate(today);
-            SetCheckOutDate(today);
-            ClickCheckAvailability();
-            
-            WaitForRoomsToUpdate(TimeSpan.FromSeconds(10));
-            
-            var currentCheckIn = GetCheckInDate();
-            var currentCheckOut = GetCheckOutDate();
-            
-            result.CheckInDate = currentCheckIn;
-            result.CheckOutDate = currentCheckOut;
-            
-            bool sameDayDatesWereSet = false;
-            if (DateTime.TryParseExact(currentCheckIn, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, 
-                System.Globalization.DateTimeStyles.None, out var checkInParsed) &&
-                DateTime.TryParseExact(currentCheckOut, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, 
-                System.Globalization.DateTimeStyles.None, out var checkOutParsed))
-            {
-                result.ParsedCheckInDate = checkInParsed;
-                result.ParsedCheckOutDate = checkOutParsed;
-                sameDayDatesWereSet = checkInParsed.Date == checkOutParsed.Date;
-                result.HasSameDayBooking = sameDayDatesWereSet;
-            }
-            
-            if (sameDayDatesWereSet)
-            {
-                var roomsCount = GetAvailableRoomsCount();
-                
-                if (roomsCount > 0)
-                {
-                    result.ValidationErrors.Add($"Rooms are available for same-day booking: {roomsCount} rooms found for {currentCheckIn} to {currentCheckOut}");
-                    result.IsValid = false;
-                }
-                else
-                {
-                    result.IsValid = true;
-                }
-            }
-            else
-            {
-                result.IsValid = true;
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Error validating same-day booking handling");
-            result.ValidationErrors.Add($"Error during same-day booking validation: {ex.Message}");
-            result.IsValid = false;
-        }
-        
-        return result;
+        return DateValidation.GetSameDayBookingHandlingResult();
     }
 
     public bool NavigateToReservationPage()
