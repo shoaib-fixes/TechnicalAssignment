@@ -19,6 +19,8 @@ public class TestConfiguration
     public TimeoutSettings Timeouts { get; set; } = new();
 
     public BrowserSettings Browser { get; set; } = new();
+
+    public AccessibilitySettings Accessibility { get; set; } = new();
 }
 
 /// <summary>
@@ -76,4 +78,16 @@ public class WindowSize
 {
     public int Width { get; set; } = 1920;
     public int Height { get; set; } = 1080;
+}
+
+/// <summary>
+/// Accessibility testing configuration
+/// </summary>
+public class AccessibilitySettings
+{
+    public bool EnableAccessibilityTesting { get; set; } = true;
+    public string[] AccessibilityTags { get; set; } = { "wcag2aa" };
+    public bool CaptureScreenshotsOnViolations { get; set; } = true;
+    public bool HighlightViolatingElements { get; set; } = true;
+    public bool FailOnViolations { get; set; } = true;
 } 

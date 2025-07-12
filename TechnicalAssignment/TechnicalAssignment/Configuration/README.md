@@ -97,4 +97,44 @@ TEST_TestConfiguration__Browser__Headless=true dotnet test
 
 # Test different browser
 TEST_TestConfiguration__Browser__DefaultBrowser=Firefox dotnet test
+```
+
+## Accessibility Testing Configuration
+The framework includes built-in accessibility testing powered by `axe-core`. These settings can be configured in `appsettings.json` under the `Accessibility` section.
+
+### Accessibility Configuration Structure
+
+```json
+{
+  "TestConfiguration": {
+    "Accessibility": {
+      "EnableAccessibilityTesting": true,
+      "AccessibilityTags": [ "wcag2aa" ],
+      "CaptureScreenshotsOnViolations": true,
+      "HighlightViolatingElements": true,
+      "FailOnViolations": false
+    }
+  }
+}
+```
+
+-   `EnableAccessibilityTesting`: Set to `false` to disable all accessibility tests.
+-   `AccessibilityTags`: An array of WCAG tags to validate against (e.g., `wcag2a`, `wcag2aa`, `wcag21aa`).
+-   `CaptureScreenshotsOnViolations`: Set to `true` to automatically capture screenshots of elements that violate accessibility rules.
+-   `HighlightViolatingElements`: Set to `true` to draw a red border around violating elements in the page screenshot.
+-   `FailOnViolations`: Set to `true` to fail the test if any accessibility violations are found. If `false`, violations will be logged without failing the test.
+
+### Overriding Accessibility Settings with Environment Variables
+
+You can override these settings from the command line for specific test runs.
+
+```bash
+# Disable accessibility tests entirely
+TEST_TestConfiguration__Accessibility__EnableAccessibilityTesting=false
+
+# Change the WCAG level to WCAG 2.1 AAA
+TEST_TestConfiguration__Accessibility__AccessibilityTags:0=wcag21aaa
+
+# Run tests but do not fail on violations
+TEST_TestConfiguration__Accessibility__FailOnViolations=false
 ``` 

@@ -48,6 +48,11 @@ public sealed class ConfigurationManager
     /// </summary>
     public BrowserSettings Browser => _testConfiguration.Browser;
 
+    /// <summary>
+    /// Gets the accessibility settings
+    /// </summary>
+    public AccessibilitySettings Accessibility => _testConfiguration.Accessibility;
+
     private IConfiguration BuildConfiguration()
     {
         _logger.LogDebug("Building configuration from multiple sources");

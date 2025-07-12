@@ -107,7 +107,7 @@ public abstract class BaseTest
             {
                 var testName = TestContext.CurrentContext.Test.Name;
                 Logger.LogInformation("Test failed: {TestName}. Capturing screenshot.", testName);
-                ScreenshotHelper.CaptureScreenshot(Driver, testName);
+                ScreenshotHelper.CaptureScreenshot(Driver, testName, Logger);
             }
         }
         catch (Exception ex)

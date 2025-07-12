@@ -282,7 +282,7 @@ public class HomePageBookingGuestFormTests : BaseTest
                 bookedRoomTitle, bookedRoomPrice, string.Join(", ", bookedRoomFeatures));
             Logger.LogError("Available rooms after booking: {AvailableRooms}", string.Join(", ", availableRoomsAfter));
             
-            ScreenshotHelper.CaptureScreenshot(Driver, "DoubleBooking_CriticalBug_SameRoomAvailable");
+            ScreenshotHelper.CaptureScreenshot(Driver, "DoubleBooking_CriticalBug_SameRoomAvailable", Logger);
             
             Assert.Fail($"The specific room ({bookedRoomTitle}, £{bookedRoomPrice}) that was already booked " +
                 $"is still available for booking on the same dates ({testDates.CheckIn} to {testDates.CheckOut}). " +
@@ -382,7 +382,7 @@ public class HomePageBookingGuestFormTests : BaseTest
         else if (validationResult.HasBookingConfirmation)
         {
             Logger.LogError("BUG DETECTED: Double booking was allowed! The system incorrectly accepted a booking for already booked dates.");
-            ScreenshotHelper.CaptureScreenshot(Driver, "DoubleBooking_Bug_Detected");
+            ScreenshotHelper.CaptureScreenshot(Driver, "DoubleBooking_Bug_Detected", Logger);
             
             Assert.Fail("CRITICAL BUG: Double booking was allowed. The system should prevent booking the same room for the same dates twice. " +
                 $"Room {roomId} was successfully booked twice for {checkInDate} to {checkOutDate}.");
@@ -390,7 +390,7 @@ public class HomePageBookingGuestFormTests : BaseTest
         else
         {
             Logger.LogWarning("Unexpected state: Neither validation error nor booking confirmation detected");
-            ScreenshotHelper.CaptureScreenshot(Driver, "DoubleBooking_Unexpected_State");
+            ScreenshotHelper.CaptureScreenshot(Driver, "DoubleBooking_Unexpected_State", Logger);
             
             Assert.Fail("Unexpected result when attempting double booking. Expected validation error but got neither error nor confirmation.");
         }

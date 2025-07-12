@@ -914,7 +914,7 @@ public class ReservationPage : BasePage
             {
                 try
                 {
-                    ScreenshotHelper.CaptureScreenshot(Driver, "InvalidDateRange_NegativePricing");
+                    ScreenshotHelper.CaptureScreenshot(Driver, "InvalidDateRange_NegativePricing", Logger);
                 }
                 catch (Exception screenshotEx)
                 {
