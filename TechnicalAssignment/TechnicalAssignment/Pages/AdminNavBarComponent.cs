@@ -39,7 +39,7 @@ public class AdminNavBarComponent : BasePage
     {
         Logger.LogDebug("Navigating to Messages section");
         ElementHelper.SafeClick(Driver, MessagesLink);
-        var messagesPage = new AdminMessagesPage(Driver);
+        var messagesPage = new AdminMessagesPage(Driver, LoggingHelper.CreateLogger<AdminMessagesPage>());
         messagesPage.WaitForPageToLoad(TimeSpan.FromSeconds(10));
         return messagesPage;
     }

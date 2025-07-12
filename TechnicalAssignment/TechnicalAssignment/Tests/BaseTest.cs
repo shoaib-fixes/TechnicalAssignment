@@ -80,6 +80,8 @@ public abstract class BaseTest
         });
 
         _serviceProvider = services.BuildServiceProvider();
+        // Force early configuration validation
+        _serviceProvider.GetRequiredService<ConfigurationManager>();
     }
 
     [SetUp]

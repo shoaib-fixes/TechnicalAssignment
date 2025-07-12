@@ -19,14 +19,14 @@ public class HomePage : BasePage
     public HomePageBookingRoomListComponent RoomList { get; }
     public HomePageBookingDateValidationComponent DateValidation { get; }
 
-    public HomePage(IWebDriver driver, 
+    public HomePage(IWebDriver driver, ILogger<HomePage> logger,
                    HomePageMainNavigationComponent navigation,
                    HomePageNavigationComponent socialMedia,
                    HomePageQuickLinksComponent quickLinks,
                    HomePageContactComponent contact,
                    HomePageBookingFormComponent bookingForm,
                    HomePageBookingRoomListComponent roomList,
-                   HomePageBookingDateValidationComponent dateValidation) : base(driver)
+                   HomePageBookingDateValidationComponent dateValidation) : base(driver, logger)
     {
         Navigation = navigation;
         SocialMedia = socialMedia;

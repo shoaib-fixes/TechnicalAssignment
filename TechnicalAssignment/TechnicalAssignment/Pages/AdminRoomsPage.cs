@@ -19,7 +19,7 @@ public class AdminRoomsPage : BasePage
     private static readonly By CreateButton = By.Id("createRoom");
     private static readonly By ErrorAlert = By.CssSelector("div.alert-danger p");
 
-    public AdminRoomsPage(IWebDriver driver) : base(driver) { }
+    public AdminRoomsPage(IWebDriver driver, ILogger<AdminRoomsPage> logger) : base(driver, logger) { }
 
     public override bool IsPageLoaded(TimeSpan? timeout = null) => ElementHelper.IsElementVisible(Driver, CreateForm, timeout);
 
@@ -182,7 +182,7 @@ public class AdminRoomsPage : BasePage
         ScrollHelper.ScrollToElement(Driver, roomNumberLocator);
         ElementHelper.JavaScriptClick(Driver, roomNumberLocator);
         
-        return new AdminRoomPage(Driver);
+        return new AdminRoomPage(Driver, LoggingHelper.CreateLogger<AdminRoomPage>());
     }
 
     public void BulkCreateRooms(IEnumerable<(int RoomNumber, string Type, bool Accessible, int Price, IEnumerable<string> Features)> roomConfigurations)

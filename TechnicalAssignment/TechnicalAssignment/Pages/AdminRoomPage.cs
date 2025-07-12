@@ -29,7 +29,7 @@ public class AdminRoomPage : BasePage
     private static readonly By DisplayedFeatures = By.XPath("//p[starts-with(text(), 'Features:')]/span");
     private static readonly By DisplayedRoomNumberHeader = By.CssSelector("div.room-details h2");
 
-    public AdminRoomPage(IWebDriver driver) : base(driver)
+    public AdminRoomPage(IWebDriver driver, ILogger<AdminRoomPage> logger) : base(driver, logger)
     {
     }
 

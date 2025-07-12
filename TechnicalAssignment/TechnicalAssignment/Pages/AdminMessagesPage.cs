@@ -24,7 +24,7 @@ public class AdminMessagesPage : BasePage
     
     private static readonly By ModalCloseButton = By.XPath("//div[contains(@class, 'message-modal')]//button[text()='Close']");
 
-    public AdminMessagesPage(IWebDriver driver) : base(driver)
+    public AdminMessagesPage(IWebDriver driver, ILogger<AdminMessagesPage> logger) : base(driver, logger)
     {
     }
 

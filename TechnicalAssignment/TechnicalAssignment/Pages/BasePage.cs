@@ -21,17 +21,7 @@ public abstract class BasePage
         Driver = driver;
         Logger = logger;
     }
-
-    protected BasePage(IWebDriver driver)
-    {
-        Driver = driver;
-        // This is a fallback for pages that don't get a specific logger.
-        // It's better to provide one, but this prevents crashes.
-        var loggerFactory = new LoggerFactory();
-        Logger = loggerFactory.CreateLogger(GetType());
-    }
-
-
+    
     public abstract bool IsPageLoaded(TimeSpan? timeout = null);
 
     public abstract void WaitForPageToLoad(TimeSpan? timeout = null);
