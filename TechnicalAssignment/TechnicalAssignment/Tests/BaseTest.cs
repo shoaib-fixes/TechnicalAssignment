@@ -21,6 +21,7 @@ public abstract class BaseTest
     protected IWebDriver Driver { get; private set; } = null!;
     protected TestConfiguration TestConfig { get; private set; } = null!;
     protected ILogger Logger { get; private set; } = null!;
+    protected bool ScreenshotCaptured { get; set; } = false;
 
     public static BrowserType[] BrowserTypeTestCases => new[] { BrowserType.Chrome, BrowserType.Firefox, BrowserType.Edge };
 
@@ -103,11 +104,12 @@ public abstract class BaseTest
         {
             var testStatus = TestContext.CurrentContext.Result.Outcome.Status;
             
-            if (testStatus == TestStatus.Failed && Driver != null)
+            if (testStatus == TestStatus.Failed && Driver != null && !ScreenshotCaptured)
             {
                 var testName = TestContext.CurrentContext.Test.Name;
                 Logger.LogInformation("Test failed: {TestName}. Capturing screenshot.", testName);
                 ScreenshotHelper.CaptureScreenshot(Driver, testName, Logger);
+                ScreenshotCaptured = true;
             }
         }
         catch (Exception ex)

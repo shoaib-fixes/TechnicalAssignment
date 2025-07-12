@@ -14,6 +14,8 @@ namespace TechnicalAssignment.Tests;
 /// Accessibility tests using axe-core to validate WCAG compliance
 /// </summary>
 [TestFixture]
+[Category("AccessibilityTests")]
+[Parallelizable(ParallelScope.Fixtures)]
 public class AccessibilityTests : BaseTest
 {
     private HomePage _homePage = null!;

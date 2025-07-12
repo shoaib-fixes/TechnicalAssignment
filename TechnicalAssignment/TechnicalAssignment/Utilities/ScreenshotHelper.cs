@@ -221,7 +221,7 @@ public static class ScreenshotHelper
                 {
                     if (accessibilitySettings.CaptureScreenshotsOnViolations)
                     {
-                        CaptureElementScreenshotForAccessibility(element, testName, violationIndex, violation.Id, logger);
+                        CaptureElementScreenshotForAccessibility(driver, element, testName, violationIndex, violation.Id, logger);
                     }
                     
                     if (accessibilitySettings.HighlightViolatingElements)
@@ -242,6 +242,7 @@ public static class ScreenshotHelper
     /// Captures a screenshot of a specific element for an accessibility violation
     /// </summary>
     private static void CaptureElementScreenshotForAccessibility(
+        IWebDriver driver,
         IWebElement element, 
         string testName, 
         int violationIndex, 
@@ -251,7 +252,6 @@ public static class ScreenshotHelper
         try
         {
             var screenshotName = $"{testName}_{violationIndex}_{violationId}_element.png";
-            var driver = ((IWrapsDriver)element).WrappedDriver;
             CaptureElementScreenshot(driver, element, screenshotName, logger);
         }
         catch (Exception ex)

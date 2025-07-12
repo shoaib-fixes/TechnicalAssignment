@@ -2,7 +2,7 @@
 <RunSettings>
 
   <NUnit>
-    <NumberOfTestWorkers>8</NumberOfTestWorkers>
+    <NumberOfTestWorkers>4</NumberOfTestWorkers>
     <Parallel>True</Parallel>
   </NUnit>
 

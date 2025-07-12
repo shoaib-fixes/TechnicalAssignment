@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
 using TechnicalAssignment.Pages;
 using TechnicalAssignment.Utilities;
@@ -53,6 +54,24 @@ public abstract class AdminRoomsBaseTest : BaseTest
     public void AdminRoomsTearDown()
     {
         var cleanupExceptions = new List<Exception>();
+        
+        // Capture screenshot BEFORE logout if test failed
+        try
+        {
+            var testStatus = TestContext.CurrentContext.Result.Outcome.Status;
+            if (testStatus == TestStatus.Failed && Driver != null && !ScreenshotCaptured)
+            {
+                var testName = TestContext.CurrentContext.Test.Name;
+                Logger.LogInformation("Test failed: {TestName}. Capturing screenshot before logout.", testName);
+                ScreenshotHelper.CaptureScreenshot(Driver, testName, Logger);
+                ScreenshotCaptured = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error during screenshot capture on failure.");
+        }
+        
         try
         {
             Logger.LogInformation("Starting admin rooms cleanup");
@@ -60,6 +79,8 @@ public abstract class AdminRoomsBaseTest : BaseTest
             if (_roomsToCleanup.Any())
             {
                 Logger.LogDebug("Cleaning up {Count} rooms", _roomsToCleanup.Count);
+                
+                if (Driver == null || TestConfig == null || _roomsPage == null) return;
                 
                 Driver.Navigate().GoToUrl($"{TestConfig.BaseUrl}/admin/rooms");
                 _roomsPage.WaitForPageToLoad();
