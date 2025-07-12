@@ -64,7 +64,11 @@ public class WebDriverFactory
             _logger.LogDebug("Enabling headless mode for Chrome");
             options.AddArgument("--headless");
         }
-        
+
+        // Use dynamic port assignment for parallel test execution
+        // Port 0 tells Chrome to find an available port automatically
+        options.AddArgument("--remote-debugging-port=0");
+
         options.AddArguments(
             "--no-sandbox",
             "--disable-dev-shm-usage",

@@ -69,6 +69,7 @@ public class BrowserSettings
     
     public bool Headless { get; set; } = false;
     public WindowSize WindowSize { get; set; } = new();
+    public int RemoteDebuggingPort { get; set; } = 9222;
 }
 
 /// <summary>

@@ -138,3 +138,74 @@ TEST_TestConfiguration__Accessibility__AccessibilityTags:0=wcag21aaa
 # Run tests but do not fail on violations
 TEST_TestConfiguration__Accessibility__FailOnViolations=false
 ``` 
+
+## Performance Testing Configuration
+
+The framework includes Lighthouse performance testing to measure web page performance metrics. This feature requires additional setup and configuration.
+
+### Prerequisites
+
+Before running performance tests, ensure the following are installed:
+
+1. **Node.js**: Download and install from [nodejs.org](https://nodejs.org/)
+2. **Lighthouse**: Install globally using npm
+   ```bash
+   npm install -g lighthouse@8.6.0
+   ```
+   
+   **Note**: Use Lighthouse version 8.6.0 for compatibility with the `lighthouse.net` library. Newer versions may cause compatibility issues.
+
+3. **Google Chrome**: Required for performance testing (tests will only run on Chrome)
+
+### Performance Configuration Structure
+
+The performance testing uses the following configuration in `appsettings.json`:
+
+```json
+{
+  "TestConfiguration": {
+    "Browser": {
+      "DefaultBrowser": "Chrome",
+      "Headless": false,
+      "WindowSize": {
+        "Width": 1920,
+        "Height": 1080
+      },
+      "RemoteDebuggingPort": 9222
+    }
+  }
+}
+```
+
+**Note**: The `RemoteDebuggingPort` setting is included for configuration completeness, but the framework automatically uses dynamic port assignment (port 0) to avoid conflicts during parallel test execution. Chrome will automatically find available ports for each test instance.
+
+### Behavior
+
+- **Browser Compatibility**: Performance tests only run on Chrome (automatically skipped for other browsers)
+- **Parallel Execution**: Performance tests run sequentially to avoid resource conflicts and ensure accurate measurements
+- **Screenshots**: Automatic screenshot capture on test failures
+- **Logging**: Performance scores are logged for monitoring and tracking purposes
+
+### Overriding Performance Settings with Environment Variables
+
+```bash
+# Change the remote debugging port
+TEST_TestConfiguration__Browser__RemoteDebuggingPort=9223
+
+# Run performance tests in headless mode
+TEST_TestConfiguration__Browser__Headless=true
+```
+
+### Troubleshooting Performance Tests
+
+If performance tests fail with setup errors:
+
+1. **Verify Node.js installation**: `node --version`
+2. **Verify Lighthouse installation**: `lighthouse --version`
+3. **Check Lighthouse version**: Must be 8.6.0 for compatibility
+4. **Ensure Chrome is available**: Performance tests require Chrome browser
+5. **Check port conflicts**: Ensure the `RemoteDebuggingPort` is not in use by other applications
+
+### Performance Test Thresholds
+
+Performance tests use configurable thresholds (currently set to 80% in the code). Tests will fail if the Lighthouse performance score falls below the threshold, helping maintain performance standards over time. 
