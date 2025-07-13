@@ -14,7 +14,7 @@ public static class ExtentReportHelper
 {
     private static readonly Lazy<ExtentReports> _lazyReport = new(InitializeReport);
     private static readonly AsyncLocal<ExtentTest?> _lazyTest = new();
-    private static readonly string _reportPath = Path.Combine(TestResultsHelper.GetTestResultsDirectory(), "ExtentReport.html");
+    private static readonly string _reportPath = Path.Combine(TestResultsHelper.GetTestResultsDirectory(), "Report.html");
 
     public static ExtentReports Instance => _lazyReport.Value;
     public static ExtentTest? CurrentTest
