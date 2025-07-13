@@ -3,6 +3,8 @@
 ## Overview
 This repository contains the automated test suite as requested. It is built with C# and NUnit using Selenium for browser automation, Selenium.Axe for Accessibility testing, Lighthouse for performance testing and generates reports with ExtentReports.
 
+A BugReport.md file can be found the project root.
+
 ## Key Features
 - Modern .NET Architecture: Built with C# on .NET, using Dependency Injection (Microsoft.Extensions.DependencyInjection) for a clean, decoupled, and scalable design.
 - Test-Level Isolation: Each test runs in a new, isolated browser instance, eliminating state leakage between tests and enabling reliable parallel execution.
