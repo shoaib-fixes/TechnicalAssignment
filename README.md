@@ -129,6 +129,10 @@ Example test results with screenshots, log and Results.html report in the /Resul
 Test summary: total: 152, failed: 33, succeeded: 108, skipped: 11, duration: 853.9s
 Build failed with 33 error(s) in 855.0s
 
+### 2 Test Workers
+Test summary: total: 152, failed: 33, succeeded: 108, skipped: 11, duration: 467.3s
+Build failed with 33 error(s) in 469.2s
+
 ### 4 Test Workers
 Test summary: total: 152, failed: 33, succeeded: 108, skipped: 11, duration: 331.6s
 Build failed with 33 error(s) in 332.5s
