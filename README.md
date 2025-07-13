@@ -35,7 +35,9 @@ This repository contains the automated test suite as requested. It is built with
 
 ## Setup
 
-`git clone shoaib-fixes/TechnicalAssignment.git`
+`git clone https://github.com/shoaib-fixes/TechnicalAssignment.git`
+
+`cd TechnicalAssignment\TechnicalAssignment`
 
 `dotnet restore`
 
