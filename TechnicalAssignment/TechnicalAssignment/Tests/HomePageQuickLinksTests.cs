@@ -203,10 +203,10 @@ public class HomePageQuickLinksTests : BaseTest
     }
 
     [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetMobileViewportTestCases))]
-    [Description("TC008: Verify Quick Links section displays correctly on mobile viewports")]
+    [Description("TC007: Verify Quick Links section displays correctly on mobile viewports")]
     public void QuickLinks_OnMobileViewport_ShouldDisplayCorrectly(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting TC008: Quick Links mobile viewport test on {DeviceName} ({Width}x{Height})", 
+        Logger.LogInformation("Starting TC007: Quick Links mobile viewport test on {DeviceName} ({Width}x{Height})", 
             deviceName, width, height);
         
         try
@@ -236,7 +236,7 @@ public class HomePageQuickLinksTests : BaseTest
             Assert.That(_homePage.QuickLinks.IsLinkVisible("Home", TimeSpan.FromSeconds(2)), Is.True, 
                 $"Quick Links should remain functional after touch interaction on {deviceName}");
             
-            Logger.LogInformation("TC008: Quick Links mobile viewport test passed successfully on {DeviceName} ({Width}x{Height})", 
+            Logger.LogInformation("TC007: Quick Links mobile viewport test passed successfully on {DeviceName} ({Width}x{Height})", 
                 deviceName, width, height);
         }
         finally
@@ -247,10 +247,10 @@ public class HomePageQuickLinksTests : BaseTest
     }
 
     [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetTabletViewportTestCases))]
-    [Description("TC009: Verify Quick Links section displays correctly on tablet viewports")]
+    [Description("TC008: Verify Quick Links section displays correctly on tablet viewports")]
     public void QuickLinks_OnTabletViewport_ShouldDisplayCorrectly(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting TC009: Quick Links tablet viewport test on {DeviceName} ({Width}x{Height})", 
+        Logger.LogInformation("Starting TC008: Quick Links tablet viewport test on {DeviceName} ({Width}x{Height})", 
             deviceName, width, height);
 
         try
@@ -272,7 +272,7 @@ public class HomePageQuickLinksTests : BaseTest
             Assert.That(_homePage.QuickLinks.IsLinkVisible("Home", TimeSpan.FromSeconds(2)), Is.True, 
                 $"Quick Links should remain functional after interaction on {deviceName}");
             
-            Logger.LogInformation("TC009: Quick Links tablet viewport test passed successfully on {DeviceName} ({Width}x{Height})", 
+            Logger.LogInformation("TC008: Quick Links tablet viewport test passed successfully on {DeviceName} ({Width}x{Height})", 
                 deviceName, width, height);
         }
         finally
@@ -283,10 +283,10 @@ public class HomePageQuickLinksTests : BaseTest
     }
 
     [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetDesktopViewportTestCases))]
-    [Description("TC010: Verify Quick Links section displays correctly on desktop viewports")]
+    [Description("TC009: Verify Quick Links section displays correctly on desktop viewports")]
     public void QuickLinks_OnDesktopViewport_ShouldDisplayCorrectly(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting TC010: Quick Links desktop viewport test on {DeviceName} ({Width}x{Height})", 
+        Logger.LogInformation("Starting TC009: Quick Links desktop viewport test on {DeviceName} ({Width}x{Height})", 
             deviceName, width, height);
         
         try
@@ -308,7 +308,7 @@ public class HomePageQuickLinksTests : BaseTest
             Assert.That(_homePage.QuickLinks.IsLinkVisible("Home", TimeSpan.FromSeconds(2)), Is.True,
                 $"Quick Links should remain functional after interaction on {deviceName}");
 
-            Logger.LogInformation("TC010: Quick Links desktop viewport test passed successfully on {DeviceName} ({Width}x{Height})", 
+            Logger.LogInformation("TC009: Quick Links desktop viewport test passed successfully on {DeviceName} ({Width}x{Height})", 
                 deviceName, width, height);
         }
         finally

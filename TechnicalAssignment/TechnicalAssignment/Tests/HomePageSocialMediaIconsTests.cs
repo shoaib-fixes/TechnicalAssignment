@@ -24,7 +24,7 @@ public class HomePageSocialMediaIconsTests : BaseTest
     }
 
     [Test]
-    [Description("Verify that social media icons are visible and link to the correct URLs.")]
+    [Description("TC001: Verify that social media icons are visible and link to the correct URLs.")]
     public void SocialMediaLinks_ShouldBeVisibleAndHaveCorrectUrls()
     {
         var socialMediaComponent = _homePage.SocialMedia;
@@ -50,7 +50,7 @@ public class HomePageSocialMediaIconsTests : BaseTest
     }
 
     [Test]
-    [Description("Verify that clicking a social media icon opens the link in a new tab")]
+    [Description("TC002: Verify that clicking a social media icon opens the link in a new tab")]
     public void SocialMediaLinks_ShouldOpenInNewTab()
     {
         Logger.LogInformation("Social media new tab test");

@@ -33,7 +33,7 @@ public class AccessibilityTests : BaseTest
     /// <summary>
     /// Tests accessibility compliance on the home page with different WCAG levels
     /// </summary>
-    [Test]
+    [Test(Description = "TC001: Verify home page accessibility compliance with different WCAG levels")]
     [TestCaseSource(nameof(HomePageWcagLevels))]
     public void HomePage_Accessibility_WithDifferentWCAGLevels(string[] wcagTags)
     {
@@ -47,7 +47,7 @@ public class AccessibilityTests : BaseTest
     /// <summary>
     /// Tests accessibility compliance on the admin login page
     /// </summary>
-    [Test]
+    [Test(Description = "TC002: Verify admin login page accessibility compliance with different WCAG levels")]
     [TestCaseSource(nameof(AdminLoginPageWcagLevels))]
     public void AdminLoginPage_Accessibility_WithDifferentWCAGLevels(string[] wcagTags)
     {
@@ -62,7 +62,7 @@ public class AccessibilityTests : BaseTest
     /// <summary>
     /// Tests accessibility compliance on the admin rooms page after login
     /// </summary>
-    [Test]
+    [Test(Description = "TC003: Verify admin rooms page accessibility compliance with different WCAG levels")]
     [TestCaseSource(nameof(AdminRoomsPageWcagLevels))]
     public void AdminRoomsPage_Accessibility_WithDifferentWCAGLevels(string[] wcagTags)
     {

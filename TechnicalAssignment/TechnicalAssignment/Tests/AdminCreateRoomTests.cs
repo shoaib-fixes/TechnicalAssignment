@@ -116,10 +116,10 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
     }
 
     [Test]
-    [Description("TC011: Required-Field Validation – Empty Inputs")]
+    [Description("TC005: Required-Field Validation – Empty Inputs")]
     public void CreateRoom_WithoutMandatoryFields_ShouldFail()
     {
-        Logger.LogInformation("Starting TC011: Required-field validation test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC005: Required-field validation test for browser: {Browser}", CurrentBrowser);
         
         Logger.LogDebug("Attempting to create room with empty mandatory fields");
         _roomsPage.CreateRoom("", "", false, "", new List<string>());
@@ -128,16 +128,16 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         Assert.That(_roomsPage.IsErrorAlertVisible(), Is.True, 
             "Error alert should be displayed for missing mandatory fields");
 
-        Logger.LogInformation("TC011: Required-field validation test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC005: Required-field validation test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC012: Price Field Validation – Invalid Low Prices")]
+    [Description("TC006: Price Field Validation – Invalid Low Prices")]
     [TestCase(0, "Zero price")]
     [TestCase(-100, "Negative price")]
     public void CreateRoom_InvalidLowPrice_ShouldFail(int price, string description)
     {
-        Logger.LogInformation("Starting TC012: {Description} validation test for browser: {Browser}", description, CurrentBrowser);
+        Logger.LogInformation("Starting TC006: {Description} validation test for browser: {Browser}", description, CurrentBrowser);
         
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Attempting to create room {RoomNumber} with invalid price {Price}", roomNumber, price);
@@ -152,14 +152,14 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         Assert.That(errorMessage, Does.Contain("must be greater than or equal to 1"), 
             "Error message should indicate price must be greater than 0");
 
-        Logger.LogInformation("TC012: {Description} validation test passed successfully for browser: {Browser}", description, CurrentBrowser);
+        Logger.LogInformation("TC006: {Description} validation test passed successfully for browser: {Browser}", description, CurrentBrowser);
     }
     
     [Test]
-    [Description("TC012c: Price Field Validation – Decimal Price")]
+    [Description("TC007: Price Field Validation – Decimal Price")]
     public void CreateRoom_DecimalPrice_ShouldSucceed()
     {
-        Logger.LogInformation("Starting TC012c: Decimal price validation test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC007: Decimal price validation test for browser: {Browser}", CurrentBrowser);
         
         var roomNumber = GetRandomRoomNumber();
         var price = 150.75m;
@@ -177,14 +177,14 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
                 "Room price should match the specified decimal value");
         });
 
-        Logger.LogInformation("TC012c: Decimal price validation test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC007: Decimal price validation test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC013: No-Feature Selection")]
+    [Description("TC008: No-Feature Selection")]
     public void CreateRoom_NoFeatureSelection_ShouldSucceed()
     {
-        Logger.LogInformation("Starting TC013: No-feature selection test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC008: No-feature selection test for browser: {Browser}", CurrentBrowser);
         
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Creating room {RoomNumber} with no features", roomNumber);
@@ -196,14 +196,14 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
         Assert.That(_roomsPage.IsRoomPresent(roomNumber), Is.True, 
             "Room should be created successfully without any features selected");
 
-        Logger.LogInformation("TC013: No-feature selection test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC008: No-feature selection test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC014: Default Dropdown Values on Load")]
+    [Description("TC009: Default Dropdown Values on Load")]
     public void DefaultDropdownValues_OnLoad_ShouldBeCorrect()
     {
-        Logger.LogInformation("Starting TC014: Default dropdown values test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC009: Default dropdown values test for browser: {Browser}", CurrentBrowser);
         
         Logger.LogDebug("Getting default values from room creation form");
         var (defaultType, defaultAccessibility) = _roomsPage.GetDefaultDropdownValues();
@@ -217,6 +217,6 @@ public class AdminCreateRoomTests : AdminRoomsBaseTest
                 "Default accessibility should be 'false' (not accessible)");
         });
 
-        Logger.LogInformation("TC014: Default dropdown values test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC009: Default dropdown values test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 } 

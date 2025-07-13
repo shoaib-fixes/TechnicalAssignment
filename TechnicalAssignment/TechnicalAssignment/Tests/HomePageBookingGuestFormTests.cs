@@ -29,10 +29,10 @@ public class HomePageBookingGuestFormTests : BaseTest
         _reservationPage = GetService<ReservationPage>();
     }
     
-    [Test(Description = "TC014: Verify that submitting empty form shows appropriate validation errors")]
+    [Test(Description = "TC001: Verify that submitting empty form shows appropriate validation errors")]
     public void GuestForm_WithEmptyFields_ShouldShowValidationErrors()
     {
-        Logger.LogInformation("Starting TC014: Empty form validation test");
+        Logger.LogInformation("Starting TC001: Empty form validation test");
         
         var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
         _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
@@ -60,14 +60,14 @@ public class HomePageBookingGuestFormTests : BaseTest
         Assert.That(errors.Count, Is.GreaterThan(0), 
             "At least one validation error should be displayed");
         
-        Logger.LogInformation("TC014: Empty form validation test passed successfully");
+        Logger.LogInformation("TC001: Empty form validation test passed successfully");
     }
 
     [TestCaseSource(typeof(BookingTestData), nameof(BookingTestData.FieldValidationTestCases))]
-    [Test(Description = "TC015: Verify validation for individual fields with specific invalid data")]
+    [Test(Description = "TC002: Verify validation for individual fields with specific invalid data")]
     public void GuestForm_WithInvalidFieldData_ShouldShowValidationError(string fieldName, string firstName, string lastName, string email, string phone)
     {
-        Logger.LogInformation("Starting TC015: {FieldName} validation test", fieldName);
+        Logger.LogInformation("Starting TC002: {FieldName} validation test", fieldName);
         
         var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
         _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
@@ -94,14 +94,14 @@ public class HomePageBookingGuestFormTests : BaseTest
                 $"Validation error list should not be empty for invalid {fieldName}.");
         });
         
-        Logger.LogInformation("TC015: {FieldName} validation test passed", fieldName);
+        Logger.LogInformation("TC002: {FieldName} validation test passed", fieldName);
     }
 
     [TestCaseSource(typeof(BookingTestData), nameof(BookingTestData.BoundaryValidationTestCases))]
-    [Test(Description = "TC015b: Verify validation for boundary cases (empty, whitespace, too long)")]
+    [Test(Description = "TC003: Verify validation for boundary cases (empty, whitespace, too long)")]
     public void GuestForm_WithBoundaryData_ShouldShowValidationError(string fieldName, string firstName, string lastName, string email, string phone)
     {
-        Logger.LogInformation("Starting TC015b: {FieldName} boundary validation test", fieldName);
+        Logger.LogInformation("Starting TC003: {FieldName} boundary validation test", fieldName);
         
         var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
         _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
@@ -128,13 +128,13 @@ public class HomePageBookingGuestFormTests : BaseTest
                 $"Validation error list should not be empty for boundary case {fieldName}.");
         });
         
-        Logger.LogInformation("TC015b: {FieldName} boundary validation test passed", fieldName);
+        Logger.LogInformation("TC003: {FieldName} boundary validation test passed", fieldName);
     }
 
-    [Test(Description = "TC016: Verify complete end-to-end booking workflow with valid guest information")]
+    [Test(Description = "TC004: Verify complete end-to-end booking workflow with valid guest information")]
     public void EndToEndBooking_WithValidGuestData_ShouldCompleteSuccessfully()
     {
-        Logger.LogInformation("Starting TC016: End-to-end booking workflow test");
+        Logger.LogInformation("Starting TC004: End-to-end booking workflow test");
         
         var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
         _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
@@ -159,13 +159,13 @@ public class HomePageBookingGuestFormTests : BaseTest
         Assert.That(_reservationPage.IsBookingConfirmed(), Is.True, 
             "Booking should be confirmed with valid guest information");
         
-        Logger.LogInformation("TC016: End-to-end booking workflow test passed successfully");
+        Logger.LogInformation("TC004: End-to-end booking workflow test passed successfully");
     }
 
-    [Test(Description = "TC018: Verify that Cancel button returns to previous state")]
+    [Test(Description = "TC005: Verify that Cancel button returns to previous state")]
     public void GuestForm_CancelButton_ShouldReturnToPreviousState()
     {
-        Logger.LogInformation("Starting TC018: Cancel button functionality test");
+        Logger.LogInformation("Starting TC005: Cancel button functionality test");
         
         var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
         _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
@@ -190,13 +190,13 @@ public class HomePageBookingGuestFormTests : BaseTest
         Assert.That(_reservationPage.IsGuestFormVisible(), Is.False, 
             "Guest form should be closed after clicking Cancel");
         
-        Logger.LogInformation("TC018: Cancel button functionality test passed successfully");
+        Logger.LogInformation("TC005: Cancel button functionality test passed successfully");
     }
 
-    [Test(Description = "TC019: Verify that booking a room removes those dates from availability for subsequent bookings")]
+    [Test(Description = "TC006: Verify that booking a room removes those dates from availability for subsequent bookings")]
     public void DoubleBooking_WhenRoomBooked_ShouldRemoveDatesFromAvailability()
     {
-        Logger.LogInformation("Starting TC019: Double booking prevention - room availability test");
+        Logger.LogInformation("Starting TC006: Double booking prevention - room availability test");
         
         Logger.LogDebug("Step 1: Completing initial booking");
         
@@ -289,13 +289,13 @@ public class HomePageBookingGuestFormTests : BaseTest
                 "This indicates a serious double booking vulnerability in the system.");
         }
         
-        Logger.LogInformation("TC019: Double booking prevention test passed successfully");
+        Logger.LogInformation("TC006: Double booking prevention test passed successfully");
     }
 
-    [Test(Description = "TC020: Verify that attempting to force a double booking by URL manipulation shows validation error")]
+    [Test(Description = "TC007: Verify that attempting to force a double booking by URL manipulation shows validation error")]
     public void AttemptForcedDoubleBooking_ShouldShowValidationError()
     {
-        Logger.LogInformation("Starting TC020: Forced double booking attempt test");
+        Logger.LogInformation("Starting TC007: Forced double booking attempt test");
         
         string bookingUrl = "";
         string roomId = "";
@@ -395,13 +395,13 @@ public class HomePageBookingGuestFormTests : BaseTest
             Assert.Fail("Unexpected result when attempting double booking. Expected validation error but got neither error nor confirmation.");
         }
         
-        Logger.LogInformation("TC020: Forced double booking attempt test passed successfully");
+        Logger.LogInformation("TC007: Forced double booking attempt test passed successfully");
     }
 
-    [Test(Description = "TC021: Verify that Return Home button navigates back to homepage")]
+    [Test(Description = "TC008: Verify that Return Home button navigates back to homepage")]
     public void BookingConfirmation_ReturnHomeButton_ShouldNavigateToHomepage()
     {
-        Logger.LogInformation("Starting TC021: Return Home button functionality test");
+        Logger.LogInformation("Starting TC008: Return Home button functionality test");
         
         var (checkIn, checkOut) = DateHelper.GenerateRandomTestDates();
         _homePage.BookingForm.CheckAvailability(checkIn, checkOut);
@@ -429,6 +429,6 @@ public class HomePageBookingGuestFormTests : BaseTest
         Assert.That(_homePage.IsOnHomePage(), Is.True, 
             "Should navigate back to homepage after clicking Return Home");
         
-        Logger.LogInformation("TC021: Return Home button functionality test passed successfully");
+        Logger.LogInformation("TC008: Return Home button functionality test passed successfully");
     }
 } 

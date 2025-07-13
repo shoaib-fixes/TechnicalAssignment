@@ -66,7 +66,7 @@ public class HomePageContactTests : BaseTest
     }
 
     [TestCaseSource(typeof(ContactFormTestData), nameof(ContactFormTestData.ValidationTestCases))]
-    [Description("TC002-TC013: Verify contact form validation for various invalid inputs")]
+    [Description("TC002: Verify contact form validation for various invalid inputs")]
     public void ContactForm_WithInvalidData_ShouldShowValidationError(string description, ContactFormTestData.ContactInfo testData, string expectedError)
     {
         Logger.LogInformation("Starting validation test: {Description}", description);
@@ -99,10 +99,10 @@ public class HomePageContactTests : BaseTest
     }
 
     [Test]
-    [Description("TC014: Verify multiple validation errors display simultaneously")]
+    [Description("TC003: Verify multiple validation errors display simultaneously")]
     public void ContactForm_WithAllFieldsEmpty_ShouldShowAllValidationErrors()
     {
-        Logger.LogInformation("Starting TC014: Multiple field validation errors test");
+        Logger.LogInformation("Starting TC003: Multiple field validation errors test");
         
         Logger.LogDebug("Scrolling to contact form");
         _homePage.Contact.ScrollToContactForm();
@@ -146,14 +146,14 @@ public class HomePageContactTests : BaseTest
         Assert.That(validationErrors.Count, Is.GreaterThanOrEqualTo(5), 
             $"Should have at least 5 validation errors for empty required fields. Found {validationErrors.Count} errors");
         
-        Logger.LogInformation("TC014: Multiple field validation errors test passed successfully");
+        Logger.LogInformation("TC003: Multiple field validation errors test passed successfully");
     }
 
     [Test]
-    [Description("TC015: Verify complete message lifecycle from submission to admin panel deletion")]
+    [Description("TC004: Verify complete message lifecycle from submission to admin panel deletion")]
     public void ContactForm_EndToEndFlow_ShouldCreateDisplayAndDeleteMessage()
     {
-        Logger.LogInformation("Starting TC015: End-to-end message lifecycle test");
+        Logger.LogInformation("Starting TC004: End-to-end message lifecycle test");
         
         var e2eData = ContactFormTestData.E2EContact;
         
@@ -201,14 +201,14 @@ public class HomePageContactTests : BaseTest
         Assert.That(adminMessagesPage.IsMessagePresent(e2eData.Name, e2eData.Subject), Is.False, 
             "Test message should no longer appear in admin panel after deletion");
         
-        Logger.LogInformation("TC015: End-to-end message lifecycle test passed successfully");
+        Logger.LogInformation("TC004: End-to-end message lifecycle test passed successfully");
     }
 
     [Test]
-    [Description("TC017: Verify form fields have proper labels and accessibility attributes")]
+    [Description("TC005: Verify form fields have proper labels and accessibility attributes")]
     public void ContactForm_FieldAccessibility_ShouldHaveProperLabelsAndAttributes()
     {
-        Logger.LogInformation("Starting TC017: Contact form field accessibility test");
+        Logger.LogInformation("Starting TC005: Contact form field accessibility test");
         
         Logger.LogDebug("Scrolling to contact form");
         _homePage.Contact.ScrollToContactForm();
@@ -273,16 +273,16 @@ public class HomePageContactTests : BaseTest
         Assert.That(submitButton.GetAttribute("class"), Does.Contain("btn"), "Submit button should have Bootstrap btn class");
         Assert.That(submitButton.GetAttribute("class"), Does.Contain("btn-primary"), "Submit button should have Bootstrap btn-primary class");
         
-        Logger.LogInformation("TC017: Contact form field accessibility test passed successfully");
+        Logger.LogInformation("TC005: Contact form field accessibility test passed successfully");
     }
 
     [TestCaseSource(nameof(MobileViewports))]
     [TestCaseSource(nameof(TabletViewports))]
     [TestCaseSource(nameof(DesktopViewports))]
-    [Description("TC018: Verify contact form displays correctly on different viewports")]
+    [Description("TC006: Verify contact form displays correctly on different viewports")]
     public void ContactForm_ResponsiveBehavior_ShouldMaintainFunctionalityAcrossViewports(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting TC018: Contact form responsive behavior test on {deviceName} ({Width}x{Height})", 
+        Logger.LogInformation("Starting TC006: Contact form responsive behavior test on {deviceName} ({Width}x{Height})", 
             deviceName, width, height);
         
         Logger.LogDebug("Setting viewport size to {Width}x{Height} for {deviceName}", width, height, deviceName);
@@ -342,15 +342,15 @@ public class HomePageContactTests : BaseTest
         Assert.That(_homePage.Contact.WaitForContactSubmissionSuccess(TimeSpan.FromSeconds(10)), Is.True, 
             $"Contact form submission should work on {deviceName}");
         
-        Logger.LogInformation("TC018: Contact form responsive behavior test passed successfully on {deviceName} ({Width}x{Height})", 
+        Logger.LogInformation("TC006: Contact form responsive behavior test passed successfully on {deviceName} ({Width}x{Height})", 
             deviceName, width, height);
     }
 
     [Test]
-    [Description("TC019: Verify message modal displays correct details when clicking subject in admin panel")]
+    [Description("TC007: Verify message modal displays correct details when clicking subject in admin panel")]
     public void ContactForm_MessageModal_ShouldDisplayCorrectDetailsInAdminPanel()
     {
-        Logger.LogInformation("Starting TC019: Contact form message modal verification test");
+        Logger.LogInformation("Starting TC007: Contact form message modal verification test");
         
         var testData = ContactFormTestData.ModalTestContact;
         
@@ -414,14 +414,14 @@ public class HomePageContactTests : BaseTest
         Assert.That(adminMessagesPage.WaitForMessageModalToDisappear(TimeSpan.FromSeconds(2)), Is.True, 
             "Message modal should be closed after clicking close button");
         
-        Logger.LogInformation("TC019: Contact form message modal verification test passed successfully");
+        Logger.LogInformation("TC007: Contact form message modal verification test passed successfully");
     }
 
     [Test]
-    [Description("TC020: Verify message modal in admin panel closes correctly")]
+    [Description("TC008: Verify message modal in admin panel closes correctly")]
     public void ContactForm_MessageModal_ShouldCloseCorrectlyWhenButtonClicked()
     {
-        Logger.LogInformation("Starting TC020: Contact form message modal close functionality test");
+        Logger.LogInformation("Starting TC008: Contact form message modal close functionality test");
         
         var testData = ContactFormTestData.ModalCloseTestContact;
         
@@ -453,6 +453,6 @@ public class HomePageContactTests : BaseTest
         Assert.That(adminMessagesPage.WaitForMessageModalToDisappear(TimeSpan.FromSeconds(2)), Is.True, 
             "Message modal should be closed after clicking close button");
         
-        Logger.LogInformation("TC020: Contact form message modal close functionality test passed successfully");
+        Logger.LogInformation("TC008: Contact form message modal close functionality test passed successfully");
     }
 } 

@@ -14,7 +14,7 @@ public class PerformanceTests : BaseTest
 {
     private const decimal MinAcceptablePerformanceScore = 0.8m;
 
-    [Test(Description = "TC028: Verify that the home page meets performance standards")]
+    [Test(Description = "TC001: Verify that the home page meets performance standards")]
     public async Task HomePage_Performance_ShouldMeetThresholds()
     {
         // Will only run on Chrome as remote debugging port is configured for it

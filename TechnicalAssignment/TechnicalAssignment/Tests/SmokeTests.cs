@@ -23,7 +23,7 @@ public class SmokeTests : BaseTest
         _homePage.WaitForPageToLoad();
     }
 
-    [Test(Description = "Verify that the home page loads without errors")]
+    [Test(Description = "TC001: Verify that the home page loads without errors")]
     public void HomePage_ShouldLoadSuccessfully()
     {
         Logger.LogInformation("Verifying home page title.");
@@ -33,21 +33,21 @@ public class SmokeTests : BaseTest
         Assert.That(_homePage.IsPageLoaded(TimeSpan.FromSeconds(10)), Is.True, "Home page content should be loaded and visible.");
     }
     
-    [Test(Description = "Verify that a core UI component, Quick Links, is visible")]
+    [Test(Description = "TC002: Verify that a core UI component, Quick Links, is visible")]
     public void QuickLinks_ShouldBeVisibleOnHomePage()
     {
         Logger.LogInformation("Verifying Quick Links component visibility.");
         Assert.That(_homePage.QuickLinks.IsQuickLinksSectionVisible(TimeSpan.FromSeconds(5)), Is.True, "Quick Links section should be visible.");
     }
     
-    [Test(Description = "Verify that a core UI component, Social Media, is visible")]
+    [Test(Description = "TC003: Verify that a core UI component, Social Media, is visible")]
     public void SocialMedia_ShouldBeVisibleOnHomePage()
     {
         Logger.LogInformation("Verifying Social Media component visibility.");
         Assert.That(_homePage.SocialMedia.IsSocialMediaIconsContainerVisible(TimeSpan.FromSeconds(5)), Is.True, "Social Media section should be visible.");
     }
 
-    [Test(Description = "Verify basic navigation to a different section of the page works")]
+    [Test(Description = "TC004: Verify basic navigation to a different section of the page works")]
     public void Navigation_ClickingRoomsLink_ShouldNavigateToRoomsSection()
     {
         Logger.LogInformation("Verifying navigation to Rooms section via main navigation bar.");
@@ -56,7 +56,7 @@ public class SmokeTests : BaseTest
         Assert.That(Driver.Url, Does.Contain("#rooms"), "Clicking 'Rooms' link from the main navigation should navigate to the rooms section.");
     }
     
-    [Test(Description = "Verify the site is responsive on a mobile viewport")]
+    [Test(Description = "TC005: Verify the site is responsive on a mobile viewport")]
     [TestCase(375, 667, "iPhone 8")]
     public void HomePage_ShouldBeResponsiveOnMobile(int width, int height, string deviceName)
     {
@@ -65,7 +65,7 @@ public class SmokeTests : BaseTest
         Assert.That(_homePage.IsPageLoaded(), Is.True, $"Page should remain loaded on {deviceName}.");
     }
 
-    [Test(Description = "Verify the site is responsive on a tablet viewport")]
+    [Test(Description = "TC006: Verify the site is responsive on a tablet viewport")]
     [TestCase(768, 1024, "iPad")]
     public void HomePage_ShouldBeResponsiveOnTablet(int width, int height, string deviceName)
     {

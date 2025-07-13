@@ -28,10 +28,10 @@ public class HomePageBookingReservationPageTests : BaseTest
         _reservationPage = GetService<ReservationPage>();
     }
 
-    [Test(Description = "TC009: Verify that room details are correctly displayed on the reservation page")]
+    [Test(Description = "TC001: Verify that room details are correctly displayed on the reservation page")]
     public void ReservationPage_WhenLoaded_ShouldDisplayCorrectRoomDetails()
     {
-        Logger.LogInformation("Starting TC009: Reservation page room details test");
+        Logger.LogInformation("Starting TC001: Reservation page room details test");
         
         Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
@@ -54,14 +54,14 @@ public class HomePageBookingReservationPageTests : BaseTest
         var roomFeatures = _reservationPage.GetRoomFeatures();
         Logger.LogDebug("Room features count: {Count}", roomFeatures.Count);
         
-        Logger.LogInformation("TC009: Reservation page room details test passed successfully");
+        Logger.LogInformation("TC001: Reservation page room details test passed successfully");
     }
 
     [TestCaseSource(typeof(BookingTestData), nameof(BookingTestData.AllRoomTypes))]
-    [Test(Description = "TC010: Verify that each room type displays correct guest count")]
+    [Test(Description = "TC002: Verify that each room type displays correct guest count")]
     public void ReservationPage_RoomType_ShouldDisplayCorrectGuestCount(BookingTestData.RoomInfo roomInfo)
     {
-        Logger.LogInformation("Starting TC010: {RoomType} room guest count validation test", roomInfo.RoomType);
+        Logger.LogInformation("Starting TC002: {RoomType} room guest count validation test", roomInfo.RoomType);
         
         if (Driver.Url != TestConfig.BaseUrl)
         {
@@ -85,13 +85,13 @@ public class HomePageBookingReservationPageTests : BaseTest
         Assert.That(isValid, Is.True, $"{roomInfo.RoomType} room should have max guest count of {roomInfo.ExpectedGuestCount}, but found: {actualGuestCount}");
         Assert.That(actualGuestCount, Is.EqualTo(roomInfo.ExpectedGuestCount), $"{roomInfo.RoomType} room should accommodate exactly {roomInfo.ExpectedGuestCount} guests");
         
-        Logger.LogInformation("TC010: {RoomType} room guest count validation test passed successfully", roomInfo.RoomType);
+        Logger.LogInformation("TC002: {RoomType} room guest count validation test passed successfully", roomInfo.RoomType);
     }
     
-    [Test(Description = "TC011: Verify that the calendar navigation buttons (Today, Back, Next) work correctly on the reservation page")]
+    [Test(Description = "TC003: Verify that the calendar navigation buttons (Today, Back, Next) work correctly on the reservation page")]
     public void ReservationPage_CalendarButtons_ShouldFunctionCorrectly()
     {
-        Logger.LogInformation("Starting TC011: Calendar buttons functionality test");
+        Logger.LogInformation("Starting TC003: Calendar buttons functionality test");
         
         Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
@@ -157,13 +157,13 @@ public class HomePageBookingReservationPageTests : BaseTest
         Assert.That(todayMonth, Does.Contain(currentDate.Year.ToString()), 
             "Calendar should show current year after clicking Today");
         
-        Logger.LogInformation("TC011: Calendar buttons functionality test passed successfully");
+        Logger.LogInformation("TC003: Calendar buttons functionality test passed successfully");
     }
     
-    [Test(Description = "TC012: Verify that price summary calculates correctly: (Room Price × Nights) + Cleaning Fee + Service Fee = Total")]
+    [Test(Description = "TC004: Verify that price summary calculates correctly: (Room Price × Nights) + Cleaning Fee + Service Fee = Total")]
     public void ReservationPage_PriceSummary_ShouldCalculateCorrectly()
     {
-        Logger.LogInformation("Starting TC012: Price summary calculation test");
+        Logger.LogInformation("Starting TC004: Price summary calculation test");
         
         Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
@@ -226,15 +226,15 @@ public class HomePageBookingReservationPageTests : BaseTest
         Assert.That(cleaningFee, Is.GreaterThan(0), "Cleaning fee should be greater than zero");
         Assert.That(serviceFee, Is.GreaterThan(0), "Service fee should be greater than zero");
         
-        Logger.LogInformation("TC012: Price summary calculation test passed successfully. " +
+        Logger.LogInformation("TC004: Price summary calculation test passed successfully. " +
             "Verified: £{Room} × {Nights} nights + £{Cleaning} cleaning + £{Service} service = £{Total} total",
             roomPricePerNight, nightsCount, cleaningFee, serviceFee, totalPrice);
     }
     
-    [Test(Description = "TC013: Verify that clicking 'Reserve Now' shows the guest information form")]
+    [Test(Description = "TC005: Verify that clicking 'Reserve Now' shows the guest information form")]
     public void ReservationPage_ReserveNowButton_ShouldShowGuestForm()
     {
-        Logger.LogInformation("Starting TC013: Reserve Now button functionality test");
+        Logger.LogInformation("Starting TC005: Reserve Now button functionality test");
         
         Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
@@ -250,13 +250,13 @@ public class HomePageBookingReservationPageTests : BaseTest
         Assert.That(_reservationPage.IsGuestFormVisible(), Is.True, 
             "Guest information form should be visible after clicking Reserve Now");
         
-        Logger.LogInformation("TC013: Reserve Now button functionality test passed successfully");
+        Logger.LogInformation("TC005: Reserve Now button functionality test passed successfully");
     }
     
-    [Test(Description = "TC022: Verify that accessible badge is displayed for accessible rooms")]
+    [Test(Description = "TC006: Verify that accessible badge is displayed for accessible rooms")]
     public void ReservationPage_AccessibleBadge_ShouldDisplayForAccessibleRooms()
     {
-        Logger.LogInformation("Starting TC022: Accessible badge display test");
+        Logger.LogInformation("Starting TC006: Accessible badge display test");
         
         Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
@@ -278,13 +278,13 @@ public class HomePageBookingReservationPageTests : BaseTest
             Logger.LogDebug("No accessible badge found - room may not be accessible");
         }
         
-        Logger.LogInformation("TC022: Accessible badge display test passed successfully");
+        Logger.LogInformation("TC006: Accessible badge display test passed successfully");
     }
 
-    [Test(Description = "TC023: Verify that similar rooms section is displayed on reservation page")]
+    [Test(Description = "TC007: Verify that similar rooms section is displayed on reservation page")]
     public void ReservationPage_SimilarRoomsSection_ShouldBeDisplayed()
     {
-        Logger.LogInformation("Starting TC023: Similar rooms section display test");
+        Logger.LogInformation("Starting TC007: Similar rooms section display test");
         
         Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
@@ -309,13 +309,13 @@ public class HomePageBookingReservationPageTests : BaseTest
             Logger.LogDebug("Similar rooms section not found - may not be implemented");
         }
         
-        Logger.LogInformation("TC023: Similar rooms section display test passed successfully");
+        Logger.LogInformation("TC007: Similar rooms section display test passed successfully");
     }
 
-    [Test(Description = "TC024: Verify that room features are correctly displayed on reservation page")]
+    [Test(Description = "TC008: Verify that room features are correctly displayed on reservation page")]
     public void ReservationPage_RoomFeatures_ShouldBeDisplayedCorrectly()
     {
-        Logger.LogInformation("Starting TC024: Room features display test");
+        Logger.LogInformation("Starting TC008: Room features display test");
         
         Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
@@ -335,13 +335,13 @@ public class HomePageBookingReservationPageTests : BaseTest
         
         Logger.LogDebug("Found common features: {Features}", string.Join(", ", foundFeatures));
         
-        Logger.LogInformation("TC024: Room features display test passed successfully");
+        Logger.LogInformation("TC008: Room features display test passed successfully");
     }
 
-    [Test(Description = "TC025: Verify that room images load correctly on reservation page")]
+    [Test(Description = "TC009: Verify that room images load correctly on reservation page")]
     public void ReservationPage_RoomImage_ShouldLoadCorrectly()
     {
-        Logger.LogInformation("Starting TC025: Room image loading test");
+        Logger.LogInformation("Starting TC009: Room image loading test");
         
         Assert.That(_homePage.RoomList.NavigateToReservationPage(), Is.True, 
             "Should successfully navigate to reservation page");
@@ -362,13 +362,13 @@ public class HomePageBookingReservationPageTests : BaseTest
         Assert.That(_reservationPage.IsRoomImageLoadedSuccessfully(), Is.True, 
             "Room image should load successfully without errors");
         
-        Logger.LogInformation("TC025: Room image loading test passed successfully. Image src: {ImageSrc}", imageSrc);
+        Logger.LogInformation("TC009: Room image loading test passed successfully. Image src: {ImageSrc}", imageSrc);
     }
 
-    [Test(Description = "TC026: Verify that URL parameters are handled correctly for room booking")]
+    [Test(Description = "TC010: Verify that URL parameters are handled correctly for room booking")]
     public void ReservationPage_URLParameters_ShouldBeHandledCorrectly()
     {
-        Logger.LogInformation("Starting TC026: URL parameter handling test");
+        Logger.LogInformation("Starting TC010: URL parameter handling test");
         
         _homePage.BookingForm.ScrollToBookingSection();
         
@@ -439,6 +439,6 @@ public class HomePageBookingReservationPageTests : BaseTest
         Assert.That(currentUrl, Does.Contain(roomId), 
             "URL should contain the room ID");
         
-        Logger.LogInformation("TC026: URL parameter handling test passed successfully. Room ID: {RoomId}, URL: {Url}", roomId, currentUrl);
+        Logger.LogInformation("TC010: URL parameter handling test passed successfully. Room ID: {RoomId}, URL: {Url}", roomId, currentUrl);
     }
 } 

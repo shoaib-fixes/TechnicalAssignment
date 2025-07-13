@@ -17,10 +17,10 @@ namespace TechnicalAssignment.Tests;
 public class AdminEditRoomTests : AdminRoomsBaseTest
 {
     [Test]
-    [Description("TC006: Navigate to Room Details Page")]
+    [Description("TC001: Navigate to Room Details Page")]
     public void NavigateToRoomDetails_ClickingRoomNumber_ShouldOpenDetailsPage()
     {
-        Logger.LogInformation("Starting TC006: Navigate to room details test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC001: Navigate to room details test for browser: {Browser}", CurrentBrowser);
         
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Creating room {RoomNumber} for navigation test", roomNumber);
@@ -37,14 +37,14 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Assert.That(_roomPage.GetDisplayedRoomNumber(), Is.EqualTo(roomNumber),
             "The room number in the header should match the navigated room.");
 
-        Logger.LogInformation("TC006: Navigate to room details test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC001: Navigate to room details test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC007: Verify Room Details Display")]
+    [Description("TC002: Verify Room Details Display")]
     public void RoomDetailsDisplay_ShouldShowCorrectInformation()
     {
-        Logger.LogInformation("Starting TC007: Verify room details display test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC002: Verify room details display test for browser: {Browser}", CurrentBrowser);
         
         var roomNumber = GetRandomRoomNumber();
         var price = 150;
@@ -69,14 +69,14 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
             Assert.That(_roomPage.GetDisplayedFeatures(), Is.EquivalentTo(features), "Room features should match");
         });
 
-        Logger.LogInformation("TC007: Verify room details display test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC002: Verify room details display test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC008: Edit Room Fields")]
+    [Description("TC003: Edit Room Fields")]
     public void EditRoom_ModifyFields_ShouldUpdateSuccessfully()
     {
-        Logger.LogInformation("Starting TC008: Edit room fields test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC003: Edit room fields test for browser: {Browser}", CurrentBrowser);
         
         var roomNumber = GetRandomRoomNumber();
         var initialPrice = 120;
@@ -107,14 +107,14 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
             Assert.That(_roomPage.GetDisplayedFeatures(), Is.EquivalentTo(newFeatures), "Room features should be updated on details page");
         });
 
-        Logger.LogInformation("TC008: Edit room fields test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC003: Edit room fields test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC009: Cancel Edit Operation")]
+    [Description("TC004: Cancel Edit Operation")]
     public void EditRoom_CancelOperation_ShouldLeaveDataUnchanged()
     {
-        Logger.LogInformation("Starting TC009: Cancel edit operation test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC004: Cancel edit operation test for browser: {Browser}", CurrentBrowser);
         
         var roomNumber = GetRandomRoomNumber();
         var initialPrice = 100;
@@ -147,14 +147,14 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
             Assert.That(_roomPage.GetDisplayedFeatures(), Is.EquivalentTo(initialFeatures), "Room features should not change");
         });
 
-        Logger.LogInformation("TC009: Cancel edit operation test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC004: Cancel edit operation test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC015a: Edit Room Number – Valid Update")]
+    [Description("TC005: Edit Room Number – Valid Update")]
     public void EditRoom_ValidRoomNumber_ShouldUpdateSuccessfully()
     {
-        Logger.LogInformation("Starting TC015a: Valid room number update test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC005: Valid room number update test for browser: {Browser}", CurrentBrowser);
         
         var originalRoomNumber = GetRandomRoomNumber();
         var newRoomNumber = GetRandomRoomNumber();
@@ -181,14 +181,14 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         
         RemoveRoomFromCleanup(originalRoomNumber);
 
-        Logger.LogInformation("TC015a: Valid room number update test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC005: Valid room number update test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC015b: Edit Room Number – Duplicate Number Rejection")]
+    [Description("TC006: Edit Room Number – Duplicate Number Rejection")]
     public void EditRoom_DuplicateRoomNumber_ShouldFail()
     {
-        Logger.LogInformation("Starting TC015b: Duplicate room number edit test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC006: Duplicate room number edit test for browser: {Browser}", CurrentBrowser);
         
         var roomNumber1 = GetRandomRoomNumber();
         var roomNumber2 = GetRandomRoomNumber();
@@ -213,14 +213,14 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Assert.That(_roomPage.IsErrorAlertVisible(TimeSpan.FromSeconds(5)), Is.True, 
             "Error alert should be displayed for duplicate room number");
 
-        Logger.LogInformation("TC015b: Duplicate room number edit test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC006: Duplicate room number edit test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC015c: Edit Room Number – Invalid Number Rejection")]
+    [Description("TC007: Edit Room Number – Invalid Number Rejection")]
     public void EditRoom_InvalidRoomNumber_ShouldFail()
     {
-        Logger.LogInformation("Starting TC015c: Invalid room number edit test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC007: Invalid room number edit test for browser: {Browser}", CurrentBrowser);
         
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Creating room {RoomNumber} for invalid room number edit test", roomNumber);
@@ -242,14 +242,14 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Assert.That(_roomPage.IsErrorAlertVisible(TimeSpan.FromSeconds(5)), Is.True, 
             "Error alert should be displayed for invalid room number");
 
-        Logger.LogInformation("TC015c: Invalid room number edit test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC007: Invalid room number edit test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC015d: Edit Room Number – Large Number Over 1000")]
+    [Description("TC008: Edit Room Number – Large Number Over 1000")]
     public void EditRoom_LargeRoomNumber_ShouldFail()
     {
-        Logger.LogInformation("Starting TC015d: Large room number edit test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC008: Large room number edit test for browser: {Browser}", CurrentBrowser);
 
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Creating room {RoomNumber} for large room number edit test", roomNumber);
@@ -276,14 +276,14 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Assert.That(errorMessage, Does.Contain("must be between 1 and 1000"), 
             "Error message should specify valid room number range");
 
-        Logger.LogInformation("TC015d: Large room number edit test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC008: Large room number edit test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC016: Invalid Image URL on Edit")]
+    [Description("TC009: Invalid Image URL on Edit")]
     public void EditRoom_InvalidImageUrl_ShouldFallbackOrFailProperly()
     {
-        Logger.LogInformation("Starting TC016: Invalid image URL edit test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC009: Invalid image URL edit test for browser: {Browser}", CurrentBrowser);
         
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Creating room {RoomNumber} for invalid image URL test", roomNumber);
@@ -307,6 +307,6 @@ public class AdminEditRoomTests : AdminRoomsBaseTest
         Assert.That(actualImageUrl.Contains(invalidUrl), Is.False,
             $"Image URL should not contain the invalid fragment, but was: {actualImageUrl}");
 
-        Logger.LogInformation("TC016: Invalid image URL edit test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC009: Invalid image URL edit test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 } 

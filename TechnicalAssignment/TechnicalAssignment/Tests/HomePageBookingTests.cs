@@ -220,10 +220,10 @@ public class HomePageBookingTests : BaseTest
     }
 
     [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetMobileViewportTestCases))]
-    [Description("TC027a: Verify that booking form displays correctly on mobile viewports")]
+    [Description("TC009: Verify that booking form displays correctly on mobile viewports")]
     public void BookingForm_ResponsiveDisplay_ShouldWorkOnMobileViewports(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting TC027a: Booking form responsive display test on {DeviceName} ({Width}x{Height})", 
+        Logger.LogInformation("Starting TC009: Booking form responsive display test on {DeviceName} ({Width}x{Height})", 
             deviceName, width, height);
         
         try
@@ -238,7 +238,7 @@ public class HomePageBookingTests : BaseTest
             Assert.That(_homePage.BookingForm.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
                 $"Booking form should display correctly on {deviceName} ({width}x{height})");
             
-            Logger.LogInformation("TC027a: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 
+            Logger.LogInformation("TC009: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 
                 deviceName, width, height);
         }
         finally
@@ -249,10 +249,10 @@ public class HomePageBookingTests : BaseTest
     }
 
     [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetTabletViewportTestCases))]
-    [Description("TC027b: Verify that booking form displays correctly on tablet viewports")]
+    [Description("TC010: Verify that booking form displays correctly on tablet viewports")]
     public void BookingForm_ResponsiveDisplay_ShouldWorkOnTabletViewports(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting TC027b: Booking form responsive display test on {DeviceName} ({Width}x{Height})", 
+        Logger.LogInformation("Starting TC010: Booking form responsive display test on {DeviceName} ({Width}x{Height})", 
             deviceName, width, height);
         
         try
@@ -267,7 +267,7 @@ public class HomePageBookingTests : BaseTest
             Assert.That(_homePage.BookingForm.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
                 $"Booking form should display correctly on {deviceName} ({width}x{height})");
             
-            Logger.LogInformation("TC027b: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 
+            Logger.LogInformation("TC010: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 
                 deviceName, width, height);
         }
         finally
@@ -278,10 +278,10 @@ public class HomePageBookingTests : BaseTest
     }
 
     [TestCaseSource(typeof(ViewportTestData), nameof(ViewportTestData.GetDesktopViewportTestCases))]
-    [Description("TC027c: Verify that booking form displays correctly on desktop viewports")]
+    [Description("TC011: Verify that booking form displays correctly on desktop viewports")]
     public void BookingForm_ResponsiveDisplay_ShouldWorkOnDesktopViewports(int width, int height, string deviceName)
     {
-        Logger.LogInformation("Starting TC027c: Booking form responsive display test on {DeviceName} ({Width}x{Height})", 
+        Logger.LogInformation("Starting TC011: Booking form responsive display test on {DeviceName} ({Width}x{Height})", 
             deviceName, width, height);
         
         try
@@ -296,7 +296,7 @@ public class HomePageBookingTests : BaseTest
             Assert.That(_homePage.BookingForm.TestBookingFormResponsiveDisplay(width, height, deviceName), Is.True, 
                 $"Booking form should display correctly on {deviceName} ({width}x{height})");
             
-            Logger.LogInformation("TC027c: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 
+            Logger.LogInformation("TC011: Booking form responsive display test passed successfully on {DeviceName} ({Width}x{Height})", 
                 deviceName, width, height);
         }
         finally

@@ -17,10 +17,10 @@ namespace TechnicalAssignment.Tests;
 public class AdminRoomManagementTests : AdminRoomsBaseTest
 {
     [Test]
-    [Description("TC020: Bulk-Delete Sanity Check")]
+    [Description("TC001: Bulk-Delete Sanity Check")]
     public void BulkDelete_MultipleRooms_ShouldUpdateListingCorrectly()
     {
-        Logger.LogInformation("Starting TC020: Bulk delete multiple rooms test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC001: Bulk delete multiple rooms test for browser: {Browser}", CurrentBrowser);
         
         var room1 = GetRandomRoomNumber();
         var room2 = GetRandomRoomNumber();
@@ -65,14 +65,14 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
             Assert.That(_roomsPage.IsRoomPresent(room3), Is.False, $"Room {room3} should be deleted");
         });
         
-        Logger.LogInformation("TC020: Bulk delete multiple rooms test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC001: Bulk delete multiple rooms test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC005: Delete Room from Listing")]
+    [Description("TC002: Delete Room from Listing")]
     public void DeleteRoom_FromListing_ShouldRemoveRoom()
     {
-        Logger.LogInformation("Starting TC005: Delete room from listing test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC002: Delete room from listing test for browser: {Browser}", CurrentBrowser);
         
         var roomNumber = GetRandomRoomNumber();
         Logger.LogDebug("Creating room {RoomNumber} for deletion test", roomNumber);
@@ -91,14 +91,14 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
         Logger.LogDebug("Verifying room {RoomNumber} is no longer present after deletion", roomNumber);
         Assert.That(_roomsPage.IsRoomPresent(roomNumber), Is.False, "Room should be removed after deletion");
         
-        Logger.LogInformation("TC005: Delete room from listing test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC002: Delete room from listing test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC010: Verify New Rooms on Public HomePage")]
+    [Description("TC003: Verify New Rooms on Public HomePage")]
     public void NewRooms_ShouldAppearOnPublicHomePage()
     {
-        Logger.LogInformation("Starting TC010: Verify new rooms appear on public home page for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC003: Verify new rooms appear on public home page for browser: {Browser}", CurrentBrowser);
         
         var roomNumber = GetRandomRoomNumber();
         var price = 200m;
@@ -124,14 +124,14 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
         Assert.That(homePage.RoomList.VerifyRoomCardDetails(roomCard!, roomType, (int)price), Is.True, 
             "Room card details on public page should match created room");
 
-        Logger.LogInformation("TC010: Verify new rooms appear on public home page passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC003: Verify new rooms appear on public home page passed successfully for browser: {Browser}", CurrentBrowser);
     }
 
     [Test]
-    [Description("TC018: Unauthorized Access Redirect to LoginPage")]
+    [Description("TC004: Unauthorized Access Redirect to LoginPage")]
     public void UnauthorizedAccess_AdminRooms_ShouldRedirectToLoginPage()
     {
-        Logger.LogInformation("Starting TC018: Unauthorized access redirect to login page test for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("Starting TC004: Unauthorized access redirect to login page test for browser: {Browser}", CurrentBrowser);
         
         Logger.LogDebug("Deleting cookies to simulate unauthorized state");
         Driver.Manage().Cookies.DeleteAllCookies();
@@ -145,6 +145,6 @@ public class AdminRoomManagementTests : AdminRoomsBaseTest
         Assert.That(loginPage.IsOnLoginPage(), Is.True, 
             "Should be redirected to login page when accessing admin rooms without authorization");
         
-        Logger.LogInformation("TC018: Unauthorized access redirect to login page test passed successfully for browser: {Browser}", CurrentBrowser);
+        Logger.LogInformation("TC004: Unauthorized access redirect to login page test passed successfully for browser: {Browser}", CurrentBrowser);
     }
 } 
