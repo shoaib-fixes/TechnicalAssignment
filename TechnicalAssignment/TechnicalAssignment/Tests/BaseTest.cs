@@ -82,6 +82,8 @@ public abstract class BaseTest
         _serviceProvider = services.BuildServiceProvider();
         // Force early configuration validation
         _serviceProvider.GetRequiredService<ConfigurationManager>();
+        
+        ExtentReportHelper.Instance.ToString();
     }
 
     [SetUp]
@@ -91,6 +93,11 @@ public abstract class BaseTest
         Driver = _scope.ServiceProvider.GetRequiredService<IWebDriver>();
         TestConfig = _scope.ServiceProvider.GetRequiredService<TestConfiguration>();
         Logger = _scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger(GetType().Name);
+        
+        var testName = TestContext.CurrentContext.Test.Name;
+        var testDescription = TestContext.CurrentContext.Test.Properties.Get("Description") as string;
+        ExtentReportHelper.CreateTest(testName, testDescription);
+        
         Logger.LogInformation("Starting test: {TestName}", TestContext.CurrentContext.Test.Name);
     }
 
@@ -105,18 +112,35 @@ public abstract class BaseTest
         try
         {
             var testStatus = TestContext.CurrentContext.Result.Outcome.Status;
-            
-            if (testStatus == TestStatus.Failed && Driver != null && !ScreenshotCaptured)
+            var stackTrace = TestContext.CurrentContext.Result.StackTrace;
+            var errorMessage = TestContext.CurrentContext.Result.Message;
+            var failureCount = TestContext.CurrentContext.Result.FailCount;
+
+            if (testStatus == TestStatus.Failed || failureCount > 0)
             {
-                var testName = TestContext.CurrentContext.Test.Name;
-                Logger.LogInformation("Test failed: {TestName}. Capturing screenshot.", testName);
-                ScreenshotHelper.CaptureScreenshot(Driver, testName, Logger);
-                ScreenshotCaptured = true;
+                var finalMessage = string.IsNullOrEmpty(errorMessage) ? "Test failed with one or more assertions." : errorMessage;
+                ExtentReportHelper.LogToReport(Microsoft.Extensions.Logging.LogLevel.Error, $"Test failed: {finalMessage}", new Exception(stackTrace));
+                if (Driver != null && !ScreenshotCaptured)
+                {
+                    var testName = TestContext.CurrentContext.Test.Name;
+                    Logger.LogInformation("Test failed: {TestName}. Capturing screenshot.", testName);
+                    ScreenshotHelper.CaptureScreenshot(Driver, testName, Logger);
+                    ScreenshotCaptured = true;
+                }
+            }
+            else if (testStatus == TestStatus.Skipped)
+            {
+                ExtentReportHelper.LogToReport(Microsoft.Extensions.Logging.LogLevel.Warning, "Test skipped");
+            }
+            else
+            {
+                ExtentReportHelper.LogToReport(Microsoft.Extensions.Logging.LogLevel.Information, "Test passed");
             }
         }
         catch (Exception ex)
         {
-            Logger.LogWarning(ex, "Error during screenshot capture on failure.");
+            Logger.LogWarning(ex, "Error during teardown.");
+            ExtentReportHelper.LogToReport(Microsoft.Extensions.Logging.LogLevel.Error, "Error in TearDown.", ex);
         }
         finally
         {
@@ -124,5 +148,11 @@ public abstract class BaseTest
             _scope?.Dispose();
             Logger.LogInformation("Driver quit and scope disposed.");
         }
+    }
+    
+    [OneTimeTearDown]
+    public void OneTimeTearDown()
+    {
+        ExtentReportHelper.Instance.Flush();
     }
 } 

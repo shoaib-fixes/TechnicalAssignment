@@ -40,6 +40,7 @@ public static class ScreenshotHelper
             
             logger.LogInformation("Screenshot saved successfully to: {ScreenshotPath}", screenshotPath);
             TestContext.AddTestAttachment(screenshotPath, "Screenshot of test execution");
+            ExtentReportHelper.AddScreenshotToReport(screenshotPath);
         }
         catch (Exception ex)
         {
@@ -113,6 +114,7 @@ public static class ScreenshotHelper
             
             logger.LogInformation("Element screenshot saved successfully to: {ScreenshotPath}", screenshotPath);
             TestContext.AddTestAttachment(screenshotPath, $"Element screenshot: {screenshotName}");
+            ExtentReportHelper.AddScreenshotToReport(screenshotPath, screenshotName);
         }
         catch (Exception ex)
         {

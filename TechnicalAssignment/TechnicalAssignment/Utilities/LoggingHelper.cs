@@ -35,6 +35,7 @@ public static class LoggingHelper
                 })
                 .AddProvider(new TestContextLoggerProvider())
                 .AddProvider(new FileLoggerProvider())
+                .AddProvider(new ExtentReportHelper.ExtentLoggerProvider())
                 .SetMinimumLevel(logLevel);
         });
     }
